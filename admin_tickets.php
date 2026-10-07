@@ -80,9 +80,17 @@ $total_tickets = mysqli_num_rows($resultado);
 
         <!-- Tabla de Tickets Dinámica -->
         <div class="card border-0 shadow-sm">
-            <div class="card-header bg-white py-3">
-                <h5 class="mb-0 fw-bold">Bandeja de Tickets Recibidos</h5>
-            </div>
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 fw-bold">Tickets Recibidos</h5>
+         <!-- Filtro por estado -->
+         <select class="form-select form-select-sm style-select" style="width: 180px;">
+         <option value="todos">Todos los estados</option>
+            <option value="Pendiente">Pendientes</option>
+         <option value="En Proceso">En Proceso</option>
+         <option value="Resuelto">Resueltos</option>
+            </select>
+        </div>
+        
             <div class="card-body p-0">
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0">
