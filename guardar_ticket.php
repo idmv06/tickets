@@ -44,7 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     mysqli_close($conexion);
 }
 
-// mensaje de éxito adaptado a la temática morada y Glassmorphism
+// mensaje de éxito
 function mostrarExito() {
     echo '<!DOCTYPE html>
     <html lang="es">
