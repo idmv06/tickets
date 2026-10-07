@@ -74,22 +74,125 @@ mysqli_stmt_bind_param($stmt_c, "i", $ticket_id);
 mysqli_stmt_execute($stmt_c);
 $res_comentarios = mysqli_stmt_get_result($stmt_c);
 ?>
+
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Atender Ticket #<?php echo $ticket['ticket_id']; ?></title>
+    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Iconos -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-</head>
-<body class="bg-light">
+    
+    <!-- Estilos de la temática Morada y Glassmorphism -->
+    <style>
+        html, body {
+            min-height: 100vh;
+            margin: 0;
+            background-image: linear-gradient(to bottom, rgb(80, 4, 151), rgb(139, 20, 175)) !important;
+            background-attachment: fixed;
+            color: #ffffff; /* Texto por defecto en blanco */
+        }
 
-    <nav class="navbar navbar-dark bg-dark mb-4">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="admin_tickets.php">
-                <i class="bi bi-arrow-left"></i> Volver a la Bandeja de Tickets
+        /* Tarjetas con efecto Cristal (Glassmorphism) */
+        .card-glass {
+            background-color: rgba(255, 255, 255, 0.15) !important;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+            color: #ffffff;
+        }
+
+        .card-glass .card-header {
+            background-color: rgba(255, 255, 255, 0.1) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Ajustes de texto para que resalte sobre el cristal */
+        .text-muted-glass {
+            color: rgba(255, 255, 255, 0.7) !important;
+        }
+
+        /* Estilos de los comentarios */
+        .comentario-interno {
+            background-color: rgba(255, 193, 7, 0.2) !important; /* Tono amarillo semitransparente */
+            border: 1px solid rgba(255, 193, 7, 0.5) !important;
+        }
+        .comentario-soporte {
+            background-color: rgba(255, 255, 255, 0.2) !important; /* Tono blanco semitransparente */
+            border: 1px solid rgba(255, 255, 255, 0.4) !important;
+        }
+        .comentario-usuario {
+            background-color: rgba(0, 0, 0, 0.2) !important; /* Tono oscuro semitransparente */
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        }
+
+        /* Inputs y textareas */
+        .form-control, .form-select {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border: none;
+        }
+
+        /* Botón estilo morado (Blanco que se vuelve morado al pasar el mouse) */
+        .btn-morado {
+            background-color: #ffffff !important;
+            border-color: #ffffff !important;    
+            color: rgb(139, 20, 175) !important; 
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-morado:hover {
+            background-color: rgb(80, 4, 151) !important;
+            border-color: rgb(80, 4, 151) !important;
+            color: #ffffff !important; 
+        }
+
+        <!--- ESTILOS EXCLUSIVOS PARA IMPRESIÓN (PDF) --->
+        @media print {
+            body {
+                background: #ffffff !important;
+                color: #000000 !important;
+            }
+            .card-glass {
+                background-color: #ffffff !important;
+                backdrop-filter: none !important;
+                -webkit-backdrop-filter: none !important;
+                border: 1px solid #dee2e6 !important;
+                color: #000000 !important;
+                box-shadow: none !important;
+            }
+            .text-muted-glass, .text-white-50 {
+                color: #6c757d !important;
+            }
+            .text-white {
+                color: #000000 !important;
+            }
+            /* Ocultar elementos que no van en el PDF */
+            .ocultar-al-imprimir {
+                display: none !important;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+
+  <!-- Navbar (Se oculta al imprimir) -->
+    <nav class="navbar navbar-dark mb-4 ocultar-al-imprimir">
+        <div class="container d-flex justify-content-between">
+            <a class="btn btn-outline-light btn-sm fw-bold" href="admin_tickets.php">
+                <i class="bi bi-arrow-left"></i> Volver a la Bandeja
             </a>
+            
+            <!-- botón de impresión -->
+            <button onclick="window.print()" class="btn btn-outline-light btn-sm fw-bold">
+                <i class="bi bi-printer-fill me-1"></i> Imprimir / PDF
+            </button>
         </div>
     </nav>
 
@@ -98,38 +201,39 @@ $res_comentarios = mysqli_stmt_get_result($stmt_c);
             <div class="col-md-9">
                 
                 <!-- Datos del Ticket -->
-                <div class="card shadow-sm border-0 mb-4">
+                <div class="card card-glass shadow-sm mb-4">
                     <div class="card-body p-4">
                         <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h4 class="fw-bold text-primary mb-0">Ticket #<?php echo $ticket['ticket_id']; ?>: <?php echo htmlspecialchars($ticket['asunto']); ?></h4>
+                            <h4 class="fw-bold mb-0">Ticket #<?php echo $ticket['ticket_id']; ?>: <?php echo htmlspecialchars($ticket['asunto']); ?></h4>
                             <span class="badge bg-info text-dark fs-6"><?php echo $ticket['estado']; ?></span>
                         </div>
-                        <hr>
+                        <hr style="border-color: rgba(255,255,255,0.2);">
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <p class="mb-1 text-muted fw-bold">Institución:</p>
+                                <p class="mb-1 text-muted-glass fw-bold">Institución:</p>
                                 <p class="fs-5 mb-0"><?php echo htmlspecialchars($ticket['nombre_colegio']); ?></p>
                             </div>
                             <div class="col-md-6">
-                                <p class="mb-1 text-muted fw-bold">Reportado por:</p>
+                                <p class="mb-1 text-muted-glass fw-bold">Reportado por:</p>
                                 <p class="fs-5 mb-0"><?php echo htmlspecialchars($ticket['nombre_usuario']); ?></p>
-                                <small class="text-muted"><?php echo htmlspecialchars($ticket['correo_usuario']); ?></small>
+                                <small class="text-muted-glass"><?php echo htmlspecialchars($ticket['correo_usuario']); ?></small>
                             </div>
                         </div>
                         <div class="mb-3">
-                            <p class="mb-1 text-muted fw-bold">Descripción Inicial:</p>
-                            <div class="p-3 bg-light rounded border">
+                            <p class="mb-1 text-muted-glass fw-bold">Descripción Inicial:</p>
+                            <!-- Caja de descripción  -->
+                            <div class="p-3 rounded border" style="background-color: rgba(0,0,0,0.2); border-color: rgba(255,255,255,0.2) !important;">
                                 <?php echo nl2br(htmlspecialchars($ticket['descripcion'])); ?>
                             </div>
                         </div>
-                        <p class="text-muted small mb-0">Fecha de envío: <?php echo $ticket['fecha_creacion']; ?></p>
+                        <p class="text-muted-glass small mb-0">Fecha de envío: <?php echo $ticket['fecha_creacion']; ?></p>
                     </div>
                 </div>
 
                 <!-- Historial de Conversación / Comentarios -->
-                <div class="card shadow-sm border-0 mb-4">
-                    <div class="card-header bg-white py-3">
-                        <h5 class="mb-0 fw-bold"><i class="bi bi-chat-dots-fill me-2 text-primary"></i>Historial de Mensajes y Notas</h5>
+                <div class="card card-glass shadow-sm mb-4">
+                    <div class="card-header py-3">
+                        <h5 class="mb-0 fw-bold"><i class="bi bi-chat-dots-fill me-2"></i>Historial de Mensajes y Notas</h5>
                     </div>
                     <div class="card-body p-4">
                         <?php
@@ -138,34 +242,34 @@ $res_comentarios = mysqli_stmt_get_result($stmt_c);
                                 $esSoporte = ($com['rol_autor'] === 'soporte');
                                 $esInterno = ($com['es_interno'] == 1);
                                 
-                                // Diseño diferente si es una nota interna del equipo de soporte
+                                // Diseño de los comentarios
                                 if ($esInterno) {
-                                    $claseCard = 'border-warning bg-warning bg-opacity-10';
+                                    $claseCard = 'comentario-interno';
                                     $badgeRol = '<span class="badge bg-warning text-dark">Nota Interna (Privada)</span>';
                                 } else {
-                                    $claseCard = $esSoporte ? 'border-primary bg-light' : 'border-secondary';
-                                    $badgeRol = $esSoporte ? '<span class="badge bg-dark">Soporte Técnico</span>' : '<span class="badge bg-secondary">Profesor / Colegio</span>';
+                                    $claseCard = $esSoporte ? 'comentario-soporte' : 'comentario-usuario';
+                                    $badgeRol = $esSoporte ? '<span class="badge bg-light text-dark">Soporte Técnico</span>' : '<span class="badge bg-secondary">Profesor / Colegio</span>';
                                 }
                                 
-                                echo "<div class='card mb-3 {$claseCard} shadow-sm'>
+                                echo "<div class='card mb-3 {$claseCard} shadow-sm rounded-4'>
                                     <div class='card-body'>
                                         <div class='d-flex justify-content-between align-items-center mb-2'>
                                             <strong>" . htmlspecialchars($com['nombre_autor']) . " {$badgeRol}</strong>
-                                            <small class='text-muted'>" . $com['fecha'] . "</small>
+                                            <small class='text-white-50'>" . $com['fecha'] . "</small>
                                         </div>
                                         <p class='mb-0'>" . nl2br(htmlspecialchars($com['mensaje'])) . "</p>
                                     </div>
                                 </div>";
                             }
                         } else {
-                            echo "<p class='text-muted text-center py-3'>Aún no hay comentarios en este ticket.</p>";
+                            echo "<p class='text-muted-glass text-center py-3'>Aún no hay comentarios en este ticket.</p>";
                         }
                         ?>
                     </div>
                 </div>
 
-                <!-- Formulario -->
-                <div class="card shadow-sm border-0">
+                <!-- Formulario (Se oculta al imprimir) -->
+                <div class="card card-glass shadow-sm ocultar-al-imprimir">
                     <div class="card-body p-4">
                         <h5 class="fw-bold mb-3"><i class="bi bi-reply-fill me-2"></i>Responder o Agregar Nota</h5>
                         
@@ -175,13 +279,13 @@ $res_comentarios = mysqli_stmt_get_result($stmt_c);
                                 <textarea class="form-control" id="mensaje" name="mensaje" rows="3" placeholder="Escriba su mensaje aquí..."></textarea>
                             </div>
 
-                            <!-- Checkbox-->
+                            <!-- Checkbox -->
                             <div class="mb-3 form-check">
                                 <input type="checkbox" class="form-check-input" id="es_interno" name="es_interno" value="1">
-                                <label class="form-check-label text-muted" for="es_interno">Marcar como nota interna (solo visible para el equipo de soporte)</label>
+                                <label class="form-check-label text-muted-glass" for="es_interno">Marcar como nota interna (solo visible para el equipo de soporte)</label>
                             </div>
 
-                            <div class="row mb-3">
+                            <div class="row mb-4">
                                 <div class="col-md-6">
                                     <label for="nuevo_estado" class="form-label fw-bold">Cambiar Estado del Ticket:</label>
                                     <select class="form-select" id="nuevo_estado" name="nuevo_estado">
@@ -193,7 +297,7 @@ $res_comentarios = mysqli_stmt_get_result($stmt_c);
                                 </div>
                             </div>
 
-                            <button type="submit" class="btn btn-primary fw-bold">
+                            <button type="submit" class="btn btn-morado fw-bold px-4 py-2">
                                 <i class="bi bi-send-fill me-1"></i> Enviar Mensaje y Actualizar
                             </button>
                         </form>
@@ -204,5 +308,7 @@ $res_comentarios = mysqli_stmt_get_result($stmt_c);
         </div>
     </div>
 
+    <!-- Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
