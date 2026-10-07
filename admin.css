@@ -1,0 +1,39 @@
+html, body {
+    min-height: 100vh;
+    margin: 0;
+    background-image: linear-gradient(
+        to bottom,
+        #500497,
+        #8b14af
+    ) !important;
+    background-attachment: fixed;
+}
+
+.modal-content-morado {
+    background: linear-gradient(135deg, rgb(80, 4, 151), rgb(139, 20, 175)) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
+}
+
+.modal-content-morado .modal-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.modal-content-morado .modal-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.btn-modal-morado {
+    background-color: #ffffff !important;
+    border-color: #ffffff !important;
+    color: rgb(139, 20, 175) !important;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-modal-morado:hover {
+    background-color: rgb(80, 4, 151) !important;
+    border-color: rgb(80, 4, 151) !important;
+    color: #ffffff !important;
+}

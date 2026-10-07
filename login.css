@@ -1,0 +1,50 @@
+body {
+    min-height: 100vh;
+    margin: 0;
+    
+    background-image: linear-gradient(to bottom, rgb(80, 4, 151), rgb(139, 20, 175));
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card {
+    background-color: rgba(255, 255, 255, 0.15) !important; 
+    
+    backdrop-filter: blur(10px); 
+    -webkit-backdrop-filter: blur(10px);
+    
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+.input-group > .input-group-text {
+    height: 58px; 
+    border-radius: 0.375rem 0 0 0.375rem; 
+}
+
+.input-group > .form-floating > .form-control {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.card h4 {
+    color: #fbfbfc !important; 
+}
+
+
+.btn-primary {
+    background-color: #ffffff !important;
+    border-color: #ffffff !important;    
+    color: rgb(0, 0, 0) !important; 
+}
+
+.btn-primary:hover {
+    background-color: #780083 !important;
+    border-color: #780083 !important;
+    color: rgb(0, 0, 0) !important; 
+}
+
+.text-primary {
+    color: #ffffff !important; 
+}
