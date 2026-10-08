@@ -187,6 +187,29 @@ $res_comentarios = mysqli_stmt_get_result($stmt_c);
                         <p class="text-muted-glass small mb-0">Fecha de envío: <?php echo $ticket['fecha_creacion']; ?></p>
                     </div>
                 </div>
+                
+                <!-- Visualización de Archivo Adjunto (si existe) -->
+                 <?php if (!empty($ticket['archivo_adjunto'])): ?>
+                    <?php 
+                        $ruta_archivo = 'uploads/' . htmlspecialchars($ticket['archivo_adjunto']);
+                        $extension = strtolower(pathinfo($ticket['archivo_adjunto'], PATHINFO_EXTENSION));
+                        $es_imagen = in_array($extension, ['jpg', 'jpeg', 'png', 'gif']);
+                    ?>
+                    <div class="mt-3">
+                    <p class="mb-1 text-muted-glass fw-bold"><i class="bi bi-paperclip me-1"></i> Archivo Adjunto:</p>
+                    <?php if ($es_imagen): ?>
+                    <!-- Vista previa de imagen -->
+                 <div class="mb-2">
+                        <a href="<?php echo $ruta_archivo; ?>" target="_blank">
+                        <img src="<?php echo $ruta_archivo; ?>" class="img-fluid rounded border border-white-50 shadow-sm" style="max-height: 250px;" alt="Captura adjunta">
+                        </a>
+                 </div>
+                    <?php endif; ?>
+                    <a href="<?php echo $ruta_archivo; ?>" download class="btn btn-sm btn-outline-light">
+                    <i class="bi bi-download me-1"></i> Descargar <?php echo htmlspecialchars($ticket['archivo_adjunto']); ?>
+                    </a>
+                 </div>
+                <?php endif; ?>
 
                 <!-- Historial de Conversación -->
                 <div class="card card-glass shadow-sm mb-4">
