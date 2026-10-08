@@ -2,39 +2,56 @@
 session_start();
 include 'conexion.php';
 
-// Validar que el usuario esté logueado
 if (!isset($_SESSION['usuario_id'])) {
     header("Location: login.html");
     exit();
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Recoger y limpiar los datos del formulario
     $asunto = trim($_POST['asunto']);
     $categoria = $_POST['categoria'];
     $prioridad = $_POST['prioridad'];
     $descripcion = trim($_POST['descripcion']);
     
-    // datos de la sesión actual
     $usuario_id = $_SESSION['usuario_id'];
     $colegio_id = $_SESSION['colegio_id'];
 
-    // Validación por si llegan vacíos
     if (empty($asunto) || empty($descripcion)) {
         die("Error: El asunto y la descripción son obligatorios.");
     }
 
-    // Consulta SQL para insertar el ticket
-    $sql = "INSERT INTO tickets (colegio_id, usuario_id, categoria, prioridad, estado, asunto, descripcion) 
-            VALUES (?, ?, ?, ?, 'Pendiente', ?, ?)";
+    // --- PROCESAMIENTO DEL ARCHIVO ADJUNTO ---
+    $nombre_archivo_final = NULL;
+
+    if (isset($_FILES['archivo']) && $_FILES['archivo']['error'] === UPLOAD_ERR_OK) {
+        $nombre_original = $_FILES['archivo']['name'];
+        $ext = strtolower(pathinfo($nombre_original, PATHINFO_EXTENSION));
+        $ext_permitidas = ['jpg', 'jpeg', 'png', 'gif', 'pdf', 'doc', 'docx', 'zip'];
+
+        if (in_array($ext, $ext_permitidas)) {
+            // Máximo 5MB
+            if ($_FILES['archivo']['size'] <= 5242880) {
+                // Crear un nombre único para evitar sobrescribir archivos
+                $nombre_archivo_final = date('Ymd_His') . '_' . uniqid() . '.' . $ext;
+                $destino = 'uploads/' . $nombre_archivo_final;
+
+                if (!move_uploaded_file($_FILES['archivo']['tmp_name'], $destino)) {
+                    $nombre_archivo_final = NULL;
+                }
+            }
+        }
+    }
+
+    // Consulta SQL preparada
+    $sql = "INSERT INTO tickets (colegio_id, usuario_id, categoria, prioridad, estado, asunto, descripcion, archivo_adjunto) 
+            VALUES (?, ?, ?, ?, 'Pendiente', ?, ?, ?)";
     
     $stmt = mysqli_prepare($conexion, $sql);
     
-    // "iissis" significa: integer, integer, string, string, string, string
-    mysqli_stmt_bind_param($stmt, "iissss", $colegio_id, $usuario_id, $categoria, $prioridad, $asunto, $descripcion);
+    // "iissssss"
+    mysqli_stmt_bind_param($stmt, "iisssss", $colegio_id, $usuario_id, $categoria, $prioridad, $asunto, $descripcion, $nombre_archivo_final);
 
     if (mysqli_stmt_execute($stmt)) {
-        // Redirigir con éxito o mostrar una pantalla de confirmación
         mostrarExito();
     } else {
         echo "Error al guardar el ticket en la base de datos: " . mysqli_error($conexion);
@@ -44,7 +61,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     mysqli_close($conexion);
 }
 
-// mensaje de éxito
 function mostrarExito() {
     echo '<!DOCTYPE html>
     <html lang="es">
