@@ -34,7 +34,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $usuario_id = $_SESSION['usuario_id'];
         $es_interno = isset($_POST['es_interno']) ? 1 : 0;
 
-        // Usando los nombres exactos de sus columnas
         $sql_com = "INSERT INTO comentarios_tickets (ticket_id, usuario_id, mensaje, es_interno) VALUES (?, ?, ?, ?)";
         $stmt_com = mysqli_prepare($conexion, $sql_com);
         mysqli_stmt_bind_param($stmt_com, "iisi", $ticket_id, $usuario_id, $mensaje, $es_interno);
@@ -74,8 +73,6 @@ mysqli_stmt_bind_param($stmt_c, "i", $ticket_id);
 mysqli_stmt_execute($stmt_c);
 $res_comentarios = mysqli_stmt_get_result($stmt_c);
 ?>
-
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -94,7 +91,7 @@ $res_comentarios = mysqli_stmt_get_result($stmt_c);
             margin: 0;
             background-image: linear-gradient(to bottom, rgb(80, 4, 151), rgb(139, 20, 175)) !important;
             background-attachment: fixed;
-            color: #ffffff; /* Texto por defecto en blanco */
+            color: #ffffff;
         }
 
         /* Tarjetas con efecto Cristal (Glassmorphism) */
@@ -111,22 +108,21 @@ $res_comentarios = mysqli_stmt_get_result($stmt_c);
             border-bottom: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        /* Ajustes de texto para que resalte sobre el cristal */
         .text-muted-glass {
             color: rgba(255, 255, 255, 0.7) !important;
         }
 
         /* Estilos de los comentarios */
         .comentario-interno {
-            background-color: rgba(255, 193, 7, 0.2) !important; /* Tono amarillo semitransparente */
+            background-color: rgba(255, 193, 7, 0.2) !important;
             border: 1px solid rgba(255, 193, 7, 0.5) !important;
         }
         .comentario-soporte {
-            background-color: rgba(255, 255, 255, 0.2) !important; /* Tono blanco semitransparente */
+            background-color: rgba(255, 255, 255, 0.2) !important;
             border: 1px solid rgba(255, 255, 255, 0.4) !important;
         }
         .comentario-usuario {
-            background-color: rgba(0, 0, 0, 0.2) !important; /* Tono oscuro semitransparente */
+            background-color: rgba(0, 0, 0, 0.2) !important;
             border: 1px solid rgba(255, 255, 255, 0.2) !important;
         }
 
@@ -136,7 +132,7 @@ $res_comentarios = mysqli_stmt_get_result($stmt_c);
             border: none;
         }
 
-        /* Botón estilo morado (Blanco que se vuelve morado al pasar el mouse) */
+        /* Botón estilo morado */
         .btn-morado {
             background-color: #ffffff !important;
             border-color: #ffffff !important;    
@@ -151,7 +147,7 @@ $res_comentarios = mysqli_stmt_get_result($stmt_c);
             color: #ffffff !important; 
         }
 
-        <!--- ESTILOS EXCLUSIVOS PARA IMPRESIÓN (PDF) --->
+        /* --- ESTILOS EXCLUSIVOS PARA IMPRESIÓN (PDF) --- */
         @media print {
             body {
                 background: #ffffff !important;
@@ -171,25 +167,21 @@ $res_comentarios = mysqli_stmt_get_result($stmt_c);
             .text-white {
                 color: #000000 !important;
             }
-            /* Ocultar elementos que no van en el PDF */
             .ocultar-al-imprimir {
                 display: none !important;
             }
         }
     </style>
-
 </head>
-
 <body>
 
-  <!-- Navbar (Se oculta al imprimir) -->
+    <!-- Navbar (Se oculta al imprimir) -->
     <nav class="navbar navbar-dark mb-4 ocultar-al-imprimir">
         <div class="container d-flex justify-content-between">
             <a class="btn btn-outline-light btn-sm fw-bold" href="admin_tickets.php">
                 <i class="bi bi-arrow-left"></i> Volver a la Bandeja
             </a>
             
-            <!-- botón de impresión -->
             <button onclick="window.print()" class="btn btn-outline-light btn-sm fw-bold">
                 <i class="bi bi-printer-fill me-1"></i> Imprimir / PDF
             </button>
@@ -221,12 +213,34 @@ $res_comentarios = mysqli_stmt_get_result($stmt_c);
                         </div>
                         <div class="mb-3">
                             <p class="mb-1 text-muted-glass fw-bold">Descripción Inicial:</p>
-                            <!-- Caja de descripción  -->
                             <div class="p-3 rounded border" style="background-color: rgba(0,0,0,0.2); border-color: rgba(255,255,255,0.2) !important;">
                                 <?php echo nl2br(htmlspecialchars($ticket['descripcion'])); ?>
                             </div>
                         </div>
-                        <p class="text-muted-glass small mb-0">Fecha de envío: <?php echo $ticket['fecha_creacion']; ?></p>
+
+                        <!-- Archivo Adjunto -->
+                        <?php if (!empty($ticket['archivo_adjunto'])): ?>
+                            <?php 
+                                $ruta_archivo = 'uploads/' . htmlspecialchars($ticket['archivo_adjunto']);
+                                $extension = strtolower(pathinfo($ticket['archivo_adjunto'], PATHINFO_EXTENSION));
+                                $es_imagen = in_array($extension, ['jpg', 'jpeg', 'png', 'gif']);
+                            ?>
+                            <div class="mt-3">
+                                <p class="mb-1 text-muted-glass fw-bold"><i class="bi bi-paperclip me-1"></i> Archivo Adjunto:</p>
+                                <?php if ($es_imagen): ?>
+                                    <div class="mb-2">
+                                        <a href="<?php echo $ruta_archivo; ?>" target="_blank">
+                                            <img src="<?php echo $ruta_archivo; ?>" class="img-fluid rounded border border-white-50 shadow-sm" style="max-height: 250px;" alt="Captura adjunta">
+                                        </a>
+                                    </div>
+                                <?php endif; ?>
+                                <a href="<?php echo $ruta_archivo; ?>" download class="btn btn-sm btn-outline-light">
+                                    <i class="bi bi-download me-1"></i> Descargar <?php echo htmlspecialchars($ticket['archivo_adjunto']); ?>
+                                </a>
+                            </div>
+                        <?php endif; ?>
+
+                        <p class="text-muted-glass small mb-0 mt-3">Fecha de envío: <?php echo $ticket['fecha_creacion']; ?></p>
                     </div>
                 </div>
 
@@ -242,7 +256,6 @@ $res_comentarios = mysqli_stmt_get_result($stmt_c);
                                 $esSoporte = ($com['rol_autor'] === 'soporte');
                                 $esInterno = ($com['es_interno'] == 1);
                                 
-                                // Diseño de los comentarios
                                 if ($esInterno) {
                                     $claseCard = 'comentario-interno';
                                     $badgeRol = '<span class="badge bg-warning text-dark">Nota Interna (Privada)</span>';
@@ -279,7 +292,6 @@ $res_comentarios = mysqli_stmt_get_result($stmt_c);
                                 <textarea class="form-control" id="mensaje" name="mensaje" rows="3" placeholder="Escriba su mensaje aquí..."></textarea>
                             </div>
 
-                            <!-- Checkbox -->
                             <div class="mb-3 form-check">
                                 <input type="checkbox" class="form-check-input" id="es_interno" name="es_interno" value="1">
                                 <label class="form-check-label text-muted-glass" for="es_interno">Marcar como nota interna (solo visible para el equipo de soporte)</label>
@@ -308,7 +320,7 @@ $res_comentarios = mysqli_stmt_get_result($stmt_c);
         </div>
     </div>
 
-    <!-- Bootstrap -->
+    <!-- Bootstrap Bundle JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
