@@ -82,7 +82,7 @@ if ($_SESSION['rol'] === 'soporte') {
                         <p class="text-muted mb-4">Complete los datos a continuación para enviar una solicitud al equipo de soporte.</p>
 
                         <!-- Formulario procesado por PHP -->
-                        <form action="guardar_ticket.php" method="POST">
+                        <form action="guardar_ticket.php" method="POST" enctype="multipart/form-data">
                             
                             <!-- Asunto -->
                             <div class="mb-3">
@@ -116,6 +116,13 @@ if ($_SESSION['rol'] === 'soporte') {
                             <div class="mb-4">
                                 <label for="descripcion" class="form-label fw-bold">Descripción detallada</label>
                                 <textarea class="form-control" id="descripcion" name="descripcion" rows="4" required placeholder="Describa con detalle lo que sucede..."></textarea>
+                            </div>
+
+                            <!-- adjuntar archivo/captura -->
+                            <div class="mb-4">
+                             <label for="archivo" class="form-label fw-bold">Adjuntar captura o documento (Opcional)</label>
+                             <input type="file" class="form-control" id="archivo" name="archivo" accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.zip">
+                             <div class="form-text text-white-50">Formatos permitidos: Imágenes (PNG, JPG), PDF, Word, ZIP. Máx: 5MB.</div>
                             </div>
 
                             <!-- Botón -->
