@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 05, 2026 at 07:47 PM
+-- Generation Time: Oct 08, 2026 at 06:26 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -53,6 +53,7 @@ CREATE TABLE `comentarios_tickets` (
   `usuario_id` int(11) NOT NULL,
   `mensaje` text NOT NULL,
   `es_interno` tinyint(1) DEFAULT 0,
+  `archivo_adjunto` varchar(255) DEFAULT NULL,
   `fecha` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -72,8 +73,18 @@ CREATE TABLE `tickets` (
   `estado` enum('Pendiente','En Proceso','Resuelto','Cerrado') DEFAULT 'Pendiente',
   `asunto` varchar(150) NOT NULL,
   `descripcion` text NOT NULL,
+  `archivo_adjunto` varchar(255) DEFAULT NULL,
   `fecha_creacion` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `tickets`
+--
+
+INSERT INTO `tickets` (`ticket_id`, `colegio_id`, `usuario_id`, `asignado_a`, `categoria`, `prioridad`, `estado`, `asunto`, `descripcion`, `archivo_adjunto`, `fecha_creacion`) VALUES
+(8, 1, 7, NULL, 'Registro de Notas', 'Alta', 'Pendiente', 'asd', 'asd', NULL, '2026-10-07 11:50:26'),
+(9, 1, 3, NULL, 'Control de Entradas', 'Media', 'Pendiente', 'asd', 'asd', NULL, '2026-10-07 12:17:09'),
+(10, 1, 7, NULL, 'Control de Entradas', 'Urgente', 'Pendiente', 'Concierto', 'Concierto de Iron Maiden el día de hoy 8/10/2026 a las 6pm en el estadio nacional, primera vez desde 2016. Estoy como loco si', '20261008_180208_6ac7be80d7aab.jpg', '2026-10-08 10:02:08');
 
 -- --------------------------------------------------------
 
@@ -96,7 +107,10 @@ CREATE TABLE `usuarios` (
 
 INSERT INTO `usuarios` (`usuario_id`, `colegio_id`, `nombre`, `correo`, `contrasena`, `rol`) VALUES
 (3, 1, 'Profe Carlos', 'profe@colegio.com', '123456', 'profesor'),
-(4, NULL, 'Soporte Admin', 'admin@suempresa.com', '123456', 'soporte');
+(4, NULL, 'Soporte Admin', 'admin@suempresa.com', '123456', 'soporte'),
+(5, NULL, 'idmv06', 'idmv06@gmail.com', '293300', 'soporte'),
+(6, NULL, 'Don Jonathan', 'Jona@gmail.com', '112300', 'soporte'),
+(7, 1, 'susta', 'susta@gmail.com', '112300', 'profesor');
 
 --
 -- Indexes for dumped tables
@@ -148,19 +162,19 @@ ALTER TABLE `colegios`
 -- AUTO_INCREMENT for table `comentarios_tickets`
 --
 ALTER TABLE `comentarios_tickets`
-  MODIFY `comentario_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `comentario_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `tickets`
 --
 ALTER TABLE `tickets`
-  MODIFY `ticket_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `ticket_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `usuario_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `usuario_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- Constraints for dumped tables
