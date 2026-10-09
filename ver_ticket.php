@@ -62,7 +62,7 @@ if (!$ticket) {
     die("El ticket solicitado no existe.");
 }
 
-// Consultar el historial de comentarios (WHERE corregido)
+// Consultar el historial de comentarios
 $sql_comentarios = "SELECT c.*, u.nombre AS nombre_autor, u.rol AS rol_autor 
                     FROM comentarios_tickets c
                     INNER JOIN usuarios u ON c.usuario_id = u.usuario_id

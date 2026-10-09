@@ -12,7 +12,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         mostrarError("Faltan datos. Por favor ingrese su correo y contraseña.");
     }
 
-    // SQL Injection prevenido + Columna correcta: contrasena
+    // SQL Injection prevenido
     $sql = "SELECT usuario_id, nombre, contrasena, rol, colegio_id FROM usuarios WHERE correo = ?";
     $stmt = mysqli_prepare($conexion, $sql);
     mysqli_stmt_bind_param($stmt, "s", $correo);
