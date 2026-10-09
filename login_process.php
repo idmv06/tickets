@@ -3,6 +3,12 @@ session_start();
 include 'conexion.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+echo "<div style='background:#fff; color:#000; padding:20px;'><h3>¿Qué está recibiendo PHP?</h3><pre>";
+    var_dump($_POST);
+    echo "</pre></div>";
+    exit();
+
     // El '??' evita los errores si el dato llega vacío o no existe
     $correo = trim($_POST['correo'] ?? '');
     
