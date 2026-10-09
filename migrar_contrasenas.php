@@ -1,7 +1,6 @@
 <?php
 include 'conexion.php';
 
-// Usamos el nombre exacto de la columna: contrasena
 $sql = "SELECT usuario_id, contrasena FROM usuarios";
 $res = mysqli_query($conexion, $sql);
 
@@ -12,8 +11,9 @@ if (!$res) {
 $contador = 0;
 
 while ($user = mysqli_fetch_assoc($res)) {
-    // Solo encripta si la contraseña NO es ya un hash (algo === 0 significa texto plano)
-    if (password_get_info($user['contrasena'])['algo'] === 0) {
+    // A prueba de PHP 8: Si no empieza por $2y$, sabemos que es texto plano
+    if (substr($user['contrasena'], 0, 4) !== '$2y$') {
+        
         $hashed = password_hash($user['contrasena'], PASSWORD_DEFAULT);
         
         $up = "UPDATE usuarios SET contrasena = ? WHERE usuario_id = ?";
