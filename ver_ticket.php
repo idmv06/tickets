@@ -62,7 +62,7 @@ if (!$ticket) {
     die("El ticket solicitado no existe.");
 }
 
-// Consultar el historial de comentarios usando 'fecha'
+// Consultar el historial de comentarios (WHERE corregido)
 $sql_comentarios = "SELECT c.*, u.nombre AS nombre_autor, u.rol AS rol_autor 
                     FROM comentarios_tickets c
                     INNER JOIN usuarios u ON c.usuario_id = u.usuario_id
@@ -84,7 +84,7 @@ $res_comentarios = mysqli_stmt_get_result($stmt_c);
     <!-- Iconos -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     
-    <!-- Estilos de la temática Morada y Glassmorphism -->
+    <!-- Estilos -->
     <style>
         html, body {
             min-height: 100vh;
@@ -94,7 +94,7 @@ $res_comentarios = mysqli_stmt_get_result($stmt_c);
             color: #ffffff;
         }
 
-        /* Tarjetas con efecto Cristal (Glassmorphism) */
+        /* Tarjetas con efecto Cristal */
         .card-glass {
             background-color: rgba(255, 255, 255, 0.15) !important;
             backdrop-filter: blur(10px);
@@ -196,32 +196,32 @@ $res_comentarios = mysqli_stmt_get_result($stmt_c);
                 <div class="card card-glass shadow-sm mb-4">
                     <div class="card-body p-4">
                         <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h4 class="fw-bold mb-0">Ticket #<?php echo $ticket['ticket_id']; ?>: <?php echo htmlspecialchars($ticket['asunto']); ?></h4>
-                            <span class="badge bg-info text-dark fs-6"><?php echo $ticket['estado']; ?></span>
+                            <h4 class="fw-bold mb-0">Ticket #<?php echo $ticket['ticket_id']; ?>: <?php echo e($ticket['asunto']); ?></h4>
+                            <span class="badge bg-info text-dark fs-6"><?php echo e($ticket['estado']); ?></span>
                         </div>
                         <hr style="border-color: rgba(255,255,255,0.2);">
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <p class="mb-1 text-muted-glass fw-bold">Institución:</p>
-                                <p class="fs-5 mb-0"><?php echo htmlspecialchars($ticket['nombre_colegio']); ?></p>
+                                <p class="fs-5 mb-0"><?php echo e($ticket['nombre_colegio']); ?></p>
                             </div>
                             <div class="col-md-6">
                                 <p class="mb-1 text-muted-glass fw-bold">Reportado por:</p>
-                                <p class="fs-5 mb-0"><?php echo htmlspecialchars($ticket['nombre_usuario']); ?></p>
-                                <small class="text-muted-glass"><?php echo htmlspecialchars($ticket['correo_usuario']); ?></small>
+                                <p class="fs-5 mb-0"><?php echo e($ticket['nombre_usuario']); ?></p>
+                                <small class="text-muted-glass"><?php echo e($ticket['correo_usuario']); ?></small>
                             </div>
                         </div>
                         <div class="mb-3">
                             <p class="mb-1 text-muted-glass fw-bold">Descripción Inicial:</p>
                             <div class="p-3 rounded border" style="background-color: rgba(0,0,0,0.2); border-color: rgba(255,255,255,0.2) !important;">
-                                <?php echo nl2br(htmlspecialchars($ticket['descripcion'])); ?>
+                                <?php echo nl2br(e($ticket['descripcion'])); ?>
                             </div>
                         </div>
 
-                        <!-- Archivo Adjunto -->
+                        <!-- Archivo Adjunto (XSS protegido en rutas y texto) -->
                         <?php if (!empty($ticket['archivo_adjunto'])): ?>
                             <?php 
-                                $ruta_archivo = 'uploads/' . htmlspecialchars($ticket['archivo_adjunto']);
+                                $ruta_archivo = 'uploads/' . e($ticket['archivo_adjunto']);
                                 $extension = strtolower(pathinfo($ticket['archivo_adjunto'], PATHINFO_EXTENSION));
                                 $es_imagen = in_array($extension, ['jpg', 'jpeg', 'png', 'gif']);
                             ?>
@@ -235,12 +235,12 @@ $res_comentarios = mysqli_stmt_get_result($stmt_c);
                                     </div>
                                 <?php endif; ?>
                                 <a href="<?php echo $ruta_archivo; ?>" download class="btn btn-sm btn-outline-light">
-                                    <i class="bi bi-download me-1"></i> Descargar <?php echo htmlspecialchars($ticket['archivo_adjunto']); ?>
+                                    <i class="bi bi-download me-1"></i> Descargar <?php echo e($ticket['archivo_adjunto']); ?>
                                 </a>
                             </div>
                         <?php endif; ?>
 
-                        <p class="text-muted-glass small mb-0 mt-3">Fecha de envío: <?php echo $ticket['fecha_creacion']; ?></p>
+                        <p class="text-muted-glass small mb-0 mt-3">Fecha de envío: <?php echo e($ticket['fecha_creacion']); ?></p>
                     </div>
                 </div>
 
@@ -267,10 +267,10 @@ $res_comentarios = mysqli_stmt_get_result($stmt_c);
                                 echo "<div class='card mb-3 {$claseCard} shadow-sm rounded-4'>
                                     <div class='card-body'>
                                         <div class='d-flex justify-content-between align-items-center mb-2'>
-                                            <strong>" . htmlspecialchars($com['nombre_autor']) . " {$badgeRol}</strong>
-                                            <small class='text-white-50'>" . $com['fecha'] . "</small>
+                                            <strong>" . e($com['nombre_autor']) . " {$badgeRol}</strong>
+                                            <small class='text-white-50'>" . e($com['fecha']) . "</small>
                                         </div>
-                                        <p class='mb-0'>" . nl2br(htmlspecialchars($com['mensaje'])) . "</p>
+                                        <p class='mb-0'>" . nl2br(e($com['mensaje'])) . "</p>
                                     </div>
                                 </div>";
                             }
@@ -320,7 +320,7 @@ $res_comentarios = mysqli_stmt_get_result($stmt_c);
         </div>
     </div>
 
-    <!-- Bootstrap Bundle JS -->
+    <!-- Bootstrap -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

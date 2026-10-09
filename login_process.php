@@ -4,44 +4,37 @@ include 'conexion.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $correo = trim($_POST['correo']);
-    $contrasena = trim($_POST['contrasena']);
+    $password_ingresada = $_POST['password'];
 
-    
-    $sql = "SELECT * FROM usuarios WHERE correo = ?";
+    // anti SQL Injection
+    $sql = "SELECT usuario_id, nombre, password, rol, colegio_id FROM usuarios WHERE correo = ?";
     $stmt = mysqli_prepare($conexion, $sql);
     mysqli_stmt_bind_param($stmt, "s", $correo);
     mysqli_stmt_execute($stmt);
     $resultado = mysqli_stmt_get_result($stmt);
 
-    if ($fila = mysqli_fetch_assoc($resultado)) {
-        
-        if ($contrasena === $fila['contrasena']) {
+    if ($user = mysqli_fetch_assoc($resultado)) {
+        // password hash
+        if (password_verify($password_ingresada, $user['password'])) {
             
-            $_SESSION['usuario_id'] = $fila['usuario_id'];
-            $_SESSION['nombre'] = $fila['nombre'];
-            $_SESSION['rol'] = $fila['rol'];
-            $_SESSION['colegio_id'] = $fila['colegio_id'];
+            
+            session_regenerate_id(true);
 
-            if ($fila['rol'] === 'soporte') {
+            $_SESSION['usuario_id'] = $user['usuario_id'];
+            $_SESSION['nombre']     = $user['nombre'];
+            $_SESSION['rol']        = $user['rol'];
+            $_SESSION['colegio_id'] = $user['colegio_id'];
+
+            if ($user['rol'] === 'soporte') {
                 header("Location: admin_tickets.php");
-                exit();
             } else {
-                // REDIRECCIÓN CAMBIADA: Ahora los profesores van al historial por defecto
                 header("Location: mis_tickets.php");
-                exit();
             }
-
-        } else {
-            
-            mostrarError("La contraseña ingresada es incorrecta. <a href='login.html' class='alert-link'>Intentar de nuevo</a>");
+            exit();
         }
-    } else {
-        
-        mostrarError("El correo electrónico <strong>$correo</strong> no se encuentra registrado en el sistema. <a href='login.html' class='alert-link'>Verificar datos</a>");
     }
 
-    mysqli_stmt_close($stmt);
-    mysqli_close($conexion);
+    $error = "Credenciales incorrectas.";
 }
 
 function mostrarError($mensaje) {

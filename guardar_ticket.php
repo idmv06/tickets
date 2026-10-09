@@ -20,39 +20,55 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         die("Error: El asunto y la descripción son obligatorios.");
     }
 
-    // --- PROCESAMIENTO DEL ARCHIVO ADJUNTO ---
     $nombre_archivo_final = NULL;
 
     if (isset($_FILES['archivo']) && $_FILES['archivo']['error'] === UPLOAD_ERR_OK) {
-        $nombre_original = $_FILES['archivo']['name'];
-        $ext = strtolower(pathinfo($nombre_original, PATHINFO_EXTENSION));
-        $ext_permitidas = ['jpg', 'jpeg', 'png', 'gif', 'pdf', 'doc', 'docx', 'zip'];
+        $tmp_name  = $_FILES['archivo']['tmp_name'];
+        $file_size = $_FILES['archivo']['size'];
 
-        if (in_array($ext, $ext_permitidas)) {
-            // Máximo 5MB
-            if ($_FILES['archivo']['size'] <= 5242880) {
-                // Crear un nombre único para evitar sobrescribir archivos
-                $nombre_archivo_final = date('Ymd_His') . '_' . uniqid() . '.' . $ext;
+        // 5MB limit
+        if ($file_size <= 5242880) {
+            
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            $mime  = finfo_file($finfo, $tmp_name);
+            finfo_close($finfo);
+
+            $allowed_mimes = [
+                'image/jpeg'      => 'jpg',
+                'image/png'       => 'png',
+                'image/gif'       => 'gif',
+                'application/pdf' => 'pdf',
+                'application/zip' => 'zip'
+            ];
+
+            if (array_key_exists($mime, $allowed_mimes)) {
+                $ext = $allowed_mimes[$mime];
+                
+                $random_name = bin2hex(random_bytes(16));
+                $nombre_archivo_final = $random_name . '.' . $ext;
+                
                 $destino = 'uploads/' . $nombre_archivo_final;
-
-                if (!move_uploaded_file($_FILES['archivo']['tmp_name'], $destino)) {
-                    $nombre_archivo_final = NULL;
-                }
+                move_uploaded_file($tmp_name, $destino);
             }
         }
     }
 
-    // Consulta SQL preparada
+    // Prepared SQL query
     $sql = "INSERT INTO tickets (colegio_id, usuario_id, categoria, prioridad, estado, asunto, descripcion, archivo_adjunto) 
             VALUES (?, ?, ?, ?, 'Pendiente', ?, ?, ?)";
     
     $stmt = mysqli_prepare($conexion, $sql);
     
-    // "iissssss"
+    // Exactly 7 variables = "iisssss"
     mysqli_stmt_bind_param($stmt, "iisssss", $colegio_id, $usuario_id, $categoria, $prioridad, $asunto, $descripcion, $nombre_archivo_final);
 
     if (mysqli_stmt_execute($stmt)) {
         mostrarExito();
+    } else {
+        echo "Error: " . mysqli_error($conexion);
+    }
+
+    mysqli_stmt_close($stmt);
     } else {
         echo "Error al guardar el ticket en la base de datos: " . mysqli_error($conexion);
     }
