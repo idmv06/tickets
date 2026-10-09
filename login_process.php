@@ -3,8 +3,13 @@ session_start();
 include 'conexion.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $correo = trim($_POST['correo']);
-    $password_ingresada = $_POST['password'];
+    // El '??' evita los errores si el dato llega vacío o no existe
+    $correo = trim($_POST['correo'] ?? '');
+    
+    $password_ingresada = $_POST['password'] ?? $_POST['contrasena'] ?? '';
+    if (empty($correo) || empty($password_ingresada)) {
+        mostrarError("Faltan datos. Por favor ingrese su correo y contraseña.");
+    }
 
     // SQL Injection prevenido + Columna correcta: contrasena
     $sql = "SELECT usuario_id, nombre, contrasena, rol, colegio_id FROM usuarios WHERE correo = ?";
