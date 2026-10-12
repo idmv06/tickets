@@ -84,7 +84,7 @@ $resultado = mysqli_stmt_get_result($stmt);
         <div class="row mb-4">
             <div class="col-md-12 d-flex justify-content-between align-items-center flex-wrap gap-3">
                 <h3 class="fw-bold mb-0"><i class="bi bi-ticket-detailed-fill me-2"></i>Mis Reportes y Solicitudes</h3>
-                <a href="crear_ticket.php" class="btn btn-morado px-4">
+                <a href="nuevo_ticket.php" class="btn btn-morado px-4">
                     <i class="bi bi-plus-circle-fill me-1"></i> Crear Nuevo Ticket
                 </a>
             </div>
