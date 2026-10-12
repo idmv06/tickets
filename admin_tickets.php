@@ -12,7 +12,8 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['rol'] !== 'soporte') {
 $sql_agentes = "SELECT usuario_id, nombre FROM usuarios WHERE rol = 'soporte'";
 $res_agentes = mysqli_query($conexion, $sql_agentes);
 
-// Capturar filtro si viene por GET
+// Capturar parámetros de búsqueda y filtro si vienen por GET
+$busqueda = isset($_GET['q']) ? trim($_GET['q']) : '';
 $filtro_asignado = isset($_GET['asignado_a']) ? $_GET['asignado_a'] : '';
 
 // Construir consulta base con LEFT JOIN para el agente asignado
@@ -20,17 +21,29 @@ $sql = "SELECT t.*, c.nombre AS nombre_colegio, u.nombre AS nombre_usuario, us.n
         FROM tickets t
         INNER JOIN colegios c ON t.colegio_id = c.colegio_id
         INNER JOIN usuarios u ON t.usuario_id = u.usuario_id
-        LEFT JOIN usuarios us ON t.asignado_a = us.usuario_id";
+        LEFT JOIN usuarios us ON t.asignado_a = us.usuario_id
+        WHERE 1=1";
 
-// Aplicar filtro si se seleccionó uno
 $params = [];
 $types = "";
 
+// Aplicar búsqueda por texto (Asunto, ID, Usuario o Colegio)
+if ($busqueda !== '') {
+    $sql .= " AND (t.asunto LIKE ? OR u.nombre LIKE ? OR c.nombre LIKE ? OR t.ticket_id LIKE ?)";
+    $searchTerm = "%" . $busqueda . "%";
+    $params[] = $searchTerm;
+    $params[] = $searchTerm;
+    $params[] = $searchTerm;
+    $params[] = $searchTerm;
+    $types .= "ssss";
+}
+
+// Aplicar filtro por asignación
 if ($filtro_asignado !== '') {
     if ($filtro_asignado === 'sin_asignar') {
-        $sql .= " WHERE t.asignado_a IS NULL";
+        $sql .= " AND t.asignado_a IS NULL";
     } else {
-        $sql .= " WHERE t.asignado_a = ?";
+        $sql .= " AND t.asignado_a = ?";
         $params[] = intval($filtro_asignado);
         $types .= "i";
     }
@@ -108,32 +121,47 @@ $resultado = mysqli_stmt_get_result($stmt);
     </nav>
 
     <div class="container mb-5">
+        
+        <!-- Tarjeta de Control: Búsqueda y Filtros -->
         <div class="row mb-4">
             <div class="col-md-12">
                 <div class="card card-glass shadow-sm p-4">
-                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-                        <h3 class="fw-bold mb-0"><i class="bi bi-inbox-fill me-2"></i>Bandeja General de Tickets</h3>
-                        
-                        <!-- Formulario de Filtro por Asignación -->
-                        <form method="GET" action="" class="d-flex align-items-center gap-2">
-                            <label for="asignado_a" class="text-nowrap fw-bold text-muted-glass">Filtrar por:</label>
-                            <select name="asignado_a" id="asignado_a" class="form-select form-select-sm" onchange="this.form.submit()">
-                                <option value="">-- Todos los tickets --</option>
+                    <h3 class="fw-bold mb-3"><i class="bi bi-inbox-fill me-2"></i>Bandeja General de Tickets</h3>
+                    
+                    <form method="GET" action="" class="row g-3 align-items-center">
+                        <!-- Barra de Búsqueda por Texto -->
+                        <div class="col-md-7">
+                            <div class="input-group">
+                                <span class="input-group-text bg-white border-0 text-muted"><i class="bi bi-search"></i></span>
+                                <input type="text" name="q" class="form-control" placeholder="Buscar por asunto, colegio, profesor o ID..." value="<?php echo e($busqueda); ?>">
+                                <button type="submit" class="btn btn-morado px-4">Buscar</button>
+                                <?php if($busqueda !== '' || $filtro_asignado !== ''): ?>
+                                    <a href="admin_tickets.php" class="btn btn-outline-light" title="Limpiar filtros"><i class="bi bi-x-lg"></i></a>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+
+                        <!-- Filtro por Agente Asignado -->
+                        <div class="col-md-5 d-flex justify-content-md-end align-items-center gap-2">
+                            <label for="asignado_a" class="text-nowrap fw-bold text-muted-glass mb-0">Asignado a:</label>
+                            <select name="asignado_a" id="asignado_a" class="form-select form-select-sm w-auto" onchange="this.form.submit()">
+                                <option value="">-- Todos --</option>
                                 <option value="sin_asignar" <?php if($filtro_asignado === 'sin_asignar') echo 'selected'; ?>>Sin asignar</option>
                                 <?php 
                                 mysqli_data_seek($res_agentes, 0);
                                 while($ag = mysqli_fetch_assoc($res_agentes)) {
                                     $sel = ($filtro_asignado == $ag['usuario_id']) ? 'selected' : '';
-                                    echo '<option value="' . $ag['usuario_id'] . '" ' . $sel . '>Asignado a: ' . e($ag['nombre']) . '</option>';
+                                    echo '<option value="' . $ag['usuario_id'] . '" ' . $sel . '>' . e($ag['nombre']) . '</option>';
                                 }
                                 ?>
                             </select>
-                        </form>
-                    </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
 
+        <!-- Tabla de Tickets -->
         <div class="card card-glass shadow-sm">
             <div class="card-body p-4">
                 <div class="table-responsive">
@@ -185,7 +213,7 @@ $resultado = mysqli_stmt_get_result($stmt);
                                 <?php endwhile; ?>
                             <?php else: ?>
                                 <tr>
-                                    <td colspan="8" class="text-center py-4 text-muted-glass">No se encontraron tickets con este filtro.</td>
+                                    <td colspan="8" class="text-center py-4 text-muted-glass">No se encontraron tickets que coincidan con la búsqueda o filtro.</td>
                                 </tr>
                             <?php endif; ?>
                         </tbody>
