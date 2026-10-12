@@ -12,8 +12,9 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['rol'] !== 'soporte') {
 $sql_agentes = "SELECT usuario_id, nombre FROM usuarios WHERE rol = 'soporte'";
 $res_agentes = mysqli_query($conexion, $sql_agentes);
 
-// Capturar parámetros de búsqueda y filtro si vienen por GET
+// Capturar parámetros de búsqueda y filtros si vienen por GET
 $busqueda = isset($_GET['q']) ? trim($_GET['q']) : '';
+$filtro_estado = isset($_GET['estado']) ? $_GET['estado'] : '';
 $filtro_asignado = isset($_GET['asignado_a']) ? $_GET['asignado_a'] : '';
 
 // Construir consulta base con LEFT JOIN para el agente asignado
@@ -27,7 +28,7 @@ $sql = "SELECT t.*, c.nombre AS nombre_colegio, u.nombre AS nombre_usuario, us.n
 $params = [];
 $types = "";
 
-// Aplicar búsqueda por texto (Asunto, ID, Usuario o Colegio)
+// 1. Aplicar búsqueda por texto (Asunto, ID, Usuario o Colegio)
 if ($busqueda !== '') {
     $sql .= " AND (t.asunto LIKE ? OR u.nombre LIKE ? OR c.nombre LIKE ? OR t.ticket_id LIKE ?)";
     $searchTerm = "%" . $busqueda . "%";
@@ -38,7 +39,14 @@ if ($busqueda !== '') {
     $types .= "ssss";
 }
 
-// Aplicar filtro por asignación
+// 2. Aplicar filtro por estado
+if ($filtro_estado !== '') {
+    $sql .= " AND t.estado = ?";
+    $params[] = $filtro_estado;
+    $types .= "s";
+}
+
+// 3. Aplicar filtro por asignación
 if ($filtro_asignado !== '') {
     if ($filtro_asignado === 'sin_asignar') {
         $sql .= " AND t.asignado_a IS NULL";
@@ -122,30 +130,36 @@ $resultado = mysqli_stmt_get_result($stmt);
 
     <div class="container mb-5">
         
-        <!-- Tarjeta de Control: Búsqueda y Filtros -->
+        <!-- Tarjeta de Controles: Búsqueda y Filtros Combinados -->
         <div class="row mb-4">
             <div class="col-md-12">
                 <div class="card card-glass shadow-sm p-4">
                     <h3 class="fw-bold mb-3"><i class="bi bi-inbox-fill me-2"></i>Bandeja General de Tickets</h3>
                     
                     <form method="GET" action="" class="row g-3 align-items-center">
-                        <!-- Barra de Búsqueda por Texto -->
-                        <div class="col-md-7">
+                        <!-- 1. Barra de Búsqueda por Texto -->
+                        <div class="col-md-4">
                             <div class="input-group">
                                 <span class="input-group-text bg-white border-0 text-muted"><i class="bi bi-search"></i></span>
-                                <input type="text" name="q" class="form-control" placeholder="Buscar por asunto, colegio, profesor o ID..." value="<?php echo e($busqueda); ?>">
-                                <button type="submit" class="btn btn-morado px-4">Buscar</button>
-                                <?php if($busqueda !== '' || $filtro_asignado !== ''): ?>
-                                    <a href="admin_tickets.php" class="btn btn-outline-light" title="Limpiar filtros"><i class="bi bi-x-lg"></i></a>
-                                <?php endif; ?>
+                                <input type="text" name="q" class="form-control" placeholder="Buscar asunto, colegio..." value="<?php echo e($busqueda); ?>">
                             </div>
                         </div>
 
-                        <!-- Filtro por Agente Asignado -->
-                        <div class="col-md-5 d-flex justify-content-md-end align-items-center gap-2">
-                            <label for="asignado_a" class="text-nowrap fw-bold text-muted-glass mb-0">Asignado a:</label>
-                            <select name="asignado_a" id="asignado_a" class="form-select form-select-sm w-auto" onchange="this.form.submit()">
-                                <option value="">-- Todos --</option>
+                        <!-- 2. Filtro por Estado -->
+                        <div class="col-md-3">
+                            <select name="estado" class="form-select" onchange="this.form.submit()">
+                                <option value="">-- Todos los estados --</option>
+                                <option value="Pendiente" <?php if($filtro_estado === 'Pendiente') echo 'selected'; ?>>Pendiente</option>
+                                <option value="En Proceso" <?php if($filtro_estado === 'En Proceso') echo 'selected'; ?>>En Proceso</option>
+                                <option value="Resuelto" <?php if($filtro_estado === 'Resuelto') echo 'selected'; ?>>Resuelto</option>
+                                <option value="Cerrado" <?php if($filtro_estado === 'Cerrado') echo 'selected'; ?>>Cerrado</option>
+                            </select>
+                        </div>
+
+                        <!-- 3. Filtro por Agente Asignado -->
+                        <div class="col-md-3">
+                            <select name="asignado_a" id="asignado_a" class="form-select" onchange="this.form.submit()">
+                                <option value="">-- Todos los agentes --</option>
                                 <option value="sin_asignar" <?php if($filtro_asignado === 'sin_asignar') echo 'selected'; ?>>Sin asignar</option>
                                 <?php 
                                 mysqli_data_seek($res_agentes, 0);
@@ -155,6 +169,14 @@ $resultado = mysqli_stmt_get_result($stmt);
                                 }
                                 ?>
                             </select>
+                        </div>
+
+                        <!-- Botones de Acción -->
+                        <div class="col-md-2 d-flex gap-2">
+                            <button type="submit" class="btn btn-morado w-100">Filtrar</button>
+                            <?php if($busqueda !== '' || $filtro_estado !== '' || $filtro_asignado !== ''): ?>
+                                <a href="admin_tickets.php" class="btn btn-outline-light" title="Limpiar filtros"><i class="bi bi-x-lg"></i></a>
+                            <?php endif; ?>
                         </div>
                     </form>
                 </div>
@@ -213,7 +235,7 @@ $resultado = mysqli_stmt_get_result($stmt);
                                 <?php endwhile; ?>
                             <?php else: ?>
                                 <tr>
-                                    <td colspan="8" class="text-center py-4 text-muted-glass">No se encontraron tickets que coincidan con la búsqueda o filtro.</td>
+                                    <td colspan="8" class="text-center py-4 text-muted-glass">No se encontraron tickets con los filtros aplicados.</td>
                                 </tr>
                             <?php endif; ?>
                         </tbody>
