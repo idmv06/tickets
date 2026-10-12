@@ -2,19 +2,20 @@
 session_start();
 include 'conexion.php';
 
-// Validar que el usuario esté logueado y NO sea admin de soporte
-if (!isset($_SESSION['usuario_id']) || $_SESSION['rol'] === 'soporte') {
+// Validar que el usuario haya iniciado sesión (profesor o administrativo)
+if (!isset($_SESSION['usuario_id'])) {
     header("Location: login.html");
     exit();
 }
 
 $usuario_id = $_SESSION['usuario_id'];
 
-// Consultar los tickets creados únicamente por este usuario
-$sql = "SELECT t.*, c.nombre AS nombre_colegio 
+// Consultar los tickets creados por este usuario, trayendo también el nombre del agente asignado
+$sql = "SELECT t.*, c.nombre AS nombre_colegio, us.nombre AS nombre_asignado 
         FROM tickets t
         INNER JOIN colegios c ON t.colegio_id = c.colegio_id
-        WHERE t.usuario_id = ? 
+        LEFT JOIN usuarios us ON t.asignado_a = us.usuario_id
+        WHERE t.usuario_id = ?
         ORDER BY t.fecha_creacion DESC";
 
 $stmt = mysqli_prepare($conexion, $sql);
@@ -27,91 +28,127 @@ $resultado = mysqli_stmt_get_result($stmt);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mis Tickets de Soporte</title>
+    <title>Mis Tickets - Panel de Usuario</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    
-    
     <style>
         html, body {
             min-height: 100vh;
             margin: 0;
             background-image: linear-gradient(to bottom, rgb(80, 4, 151), rgb(139, 20, 175)) !important;
             background-attachment: fixed;
+            color: #ffffff;
+        }
+        .card-glass {
+            background-color: rgba(255, 255, 255, 0.15) !important;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+            color: #ffffff;
+        }
+        .table-glass {
+            color: #ffffff;
+        }
+        .table-glass th, .table-glass td {
+            background-color: rgba(255, 255, 255, 0.05) !important;
+            border-color: rgba(255, 255, 255, 0.1) !important;
+            color: #ffffff !important;
+        }
+        .text-muted-glass {
+            color: rgba(255, 255, 255, 0.7) !important;
+        }
+        .btn-morado {
+            background-color: #ffffff !important;
+            color: rgb(139, 20, 175) !important;
+            font-weight: 600;
+        }
+        .btn-morado:hover {
+            background-color: rgb(80, 4, 151) !important;
+            color: #ffffff !important;
         }
     </style>
-    
 </head>
-<body class="bg-light">
+<body>
 
-    <!-- NAVBAR  -->
-    <nav class="navbar navbar-expand-lg navbar-dark mb-4">
-        <div class="container-fluid">
-            <a class="navbar-brand fw-bold" href="#">Panel de Soporte - Usuario</a>
-            <div class="d-flex align-items-center text-white">
-                <span class="me-3"><i class="bi bi-person-fill"></i> Hola, <?php echo htmlspecialchars($_SESSION['nombre']); ?></span>
-                
-                <a href="nuevo_ticket.php" class="btn btn-outline-light btn-sm fw-bold me-2"><i class="bi bi-plus-circle"></i> Nuevo Ticket</a>
-                <a href="logout.php" class="btn btn-outline-light btn-sm">Cerrar Sesión</a>
+    <nav class="navbar navbar-dark mb-4 p-3 border-bottom border-white border-opacity-10">
+        <div class="container d-flex justify-content-between">
+            <span class="navbar-brand fw-bold"><i class="bi bi-person-workspace me-2"></i>Portal de Usuario / Profesor</span>
+            <div>
+                <span class="me-3 text-white-50">Hola, <?php echo e($_SESSION['nombre']); ?></span>
+                <a href="logout.php" class="btn btn-outline-light btn-sm fw-bold"><i class="bi bi-box-arrow-right"></i> Salir</a>
             </div>
         </div>
     </nav>
 
     <div class="container mb-5">
-        <div class="row justify-content-center">
-            <div class="col-md-10">
-                <div class="card shadow-sm border-0">
-                    <div class="card-body p-4">
-                        <h4 class="fw-bold mb-4"><i class="bi bi-ticket-detailed-fill me-2"></i>Historial de Tickets Enviados</h4>
+        <div class="row mb-4">
+            <div class="col-md-12 d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <h3 class="fw-bold mb-0"><i class="bi bi-ticket-detailed-fill me-2"></i>Mis Reportes y Solicitudes</h3>
+                <a href="crear_ticket.php" class="btn btn-morado px-4">
+                    <i class="bi bi-plus-circle-fill me-1"></i> Crear Nuevo Ticket
+                </a>
+            </div>
+        </div>
 
-                        <div class="table-responsive">
-                            <table class="table table-hover align-middle">
-                                <thead class="table-dark">
+        <div class="card card-glass shadow-sm">
+            <div class="card-body p-4">
+                <div class="table-responsive">
+                    <table class="table table-glass align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>#ID</th>
+                                <th>Asunto</th>
+                                <th>Colegio</th>
+                                <th>Estado</th>
+                                <th>Atendido por (Soporte)</th>
+                                <th>Fecha</th>
+                                <th class="text-end">Detalles</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if (mysqli_num_rows($resultado) > 0): ?>
+                                <?php while($t = mysqli_fetch_assoc($resultado)): ?>
                                     <tr>
-                                        <th># ID</th>
-                                        <th>Asunto</th>
-                                        <th>Institución</th>
-                                        <th>Estado</th>
-                                        <th>Fecha</th>
-                                        <th class="text-center">Acción</th>
+                                        <td class="fw-bold">#<?php echo $t['ticket_id']; ?></td>
+                                        <td><?php echo e($t['asunto']); ?></td>
+                                        <td><?php echo e($t['nombre_colegio']); ?></td>
+                                        <td>
+                                            <?php 
+                                                $bgBadge = 'bg-secondary';
+                                                if($t['estado'] == 'Pendiente') $bgBadge = 'bg-warning text-dark';
+                                                if($t['estado'] == 'En Proceso') $bgBadge = 'bg-info text-dark';
+                                                if($t['estado'] == 'Resuelto') $bgBadge = 'bg-success';
+                                                if($t['estado'] == 'Cerrado') $bgBadge = 'bg-dark';
+                                            ?>
+                                            <span class="badge <?php echo $bgBadge; ?>"><?php echo e($t['estado']); ?></span>
+                                        </td>
+                                        <td>
+                                            <?php if(!empty($t['nombre_asignado'])): ?>
+                                                <span class="badge bg-light text-dark"><i class="bi bi-headset me-1"></i><?php echo e($t['nombre_asignado']); ?></span>
+                                            <?php else: ?>
+                                                <span class="badge bg-secondary text-white">Pendiente de asignación</span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td class="small text-muted-glass"><?php echo e($t['fecha_creacion']); ?></td>
+                                        <td class="text-end">
+                                            <a href="ver_ticket_usuario.php?id=<?php echo $t['ticket_id']; ?>" class="btn btn-morado btn-sm">
+                                                <i class="bi bi-eye-fill me-1"></i> Ver Caso
+                                            </a>
+                                        </td>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    <?php
-                                    if (mysqli_num_rows($resultado) > 0) {
-                                        while ($t = mysqli_fetch_assoc($resultado)) {
-                                            // Colores según el estado
-                                            $badgeBg = 'bg-secondary';
-                                            if ($t['estado'] == 'Pendiente') $badgeBg = 'bg-warning text-dark';
-                                            if ($t['estado'] == 'En Proceso') $badgeBg = 'bg-info text-dark';
-                                            if ($t['estado'] == 'Resuelto') $badgeBg = 'bg-success';
-                                            if ($t['estado'] == 'Cerrado') $badgeBg = 'bg-dark';
-
-                                            echo "<tr>
-                                                <td><strong>#{$t['ticket_id']}</strong></td>
-                                                <td>" . htmlspecialchars($t['asunto']) . "</td>
-                                                <td>" . htmlspecialchars($t['nombre_colegio']) . "</td>
-                                                <td><span class='badge {$badgeBg}'>{$t['estado']}</span></td>
-                                                <td><small class='text-muted'>{$t['fecha_creacion']}</small></td>
-                                                <td class='text-center'>
-                                                    <a href='ver_ticket_usuario.php?id={$t['ticket_id']}' class='btn btn-sm btn-outline-primary'>
-                                                        <i class='bi bi-chat-left-text'></i> Ver / Responder
-                                                    </a>
-                                                </td>
-                                            </tr>";
-                                        }
-                                    } else {
-                                        echo "<tr><td colspan='6' class='text-center text-muted py-4'>Aún no ha enviado ningún ticket de soporte.</td></tr>";
-                                    }
-                                    ?>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                                <?php endwhile; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="7" class="text-center py-4 text-muted-glass">Aún no has creado ningún ticket.</td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
