@@ -4,6 +4,9 @@
 ![PHP](https://img.shields.io/badge/PHP-8.x-777BB4?logo=php&logoColor=white)
 ![Bootstrap](https://img.shields.io/badge/Bootstrap-5.3.3-7952B3?logo=bootstrap&logoColor=white)
 ![Database](https://img.shields.io/badge/Database-MySQL%2FMariaDB-blue)
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?logo=css3&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)
 
 ## 🌟 Características
 
@@ -63,6 +66,6 @@ El equipo de soporte puede gestionar las solicitudes, asignar responsables y uti
 ## 📝 Créditos y transparencia
 
 - **Desarrollo:** proyecto realizado por Isaac Martínez como parte de mi práctica profesional.
-- **Inteligencia artificial:** se utilizaron herramientas de IA como apoyo para resolver dudas, comprender conceptos, depurar código y mejorar la documentación. La IA fue una herramienta de asistencia durante el proceso de desarrollo, no un sustituto del aprendizaje ni de mi participación en el proyecto. **Hecho con apoyo de IA, pero no mediante *vibe coding**
+- **Inteligencia artificial:** se utilizaron herramientas de IA como apoyo para resolver dudas, comprender conceptos, depurar código y mejorar la documentación. La IA fue una herramienta de asistencia durante el proceso de desarrollo, no un sustituto del aprendizaje ni de mi participación en el proyecto. **Hecho con apoyo de IA, pero no mediante vibe coding**
 - **Plantilla del README:** documentación estructurada tomando como referencia la guía [*How to write a good README*, de Bane Sullivan](https://github.com/banesullivan/README), adaptada a las necesidades de este proyecto.
 - **Mejora continua:** este proyecto forma parte de mi aprendizaje en desarrollo web y puede recibir mejoras, correcciones y nuevas funcionalidades.
