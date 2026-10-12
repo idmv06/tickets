@@ -15,7 +15,7 @@ if (!isset($_GET['id'])) {
 
 $ticket_id = intval($_GET['id']);
 
-// Procesar formulario si el admin envía una respuesta o cambia el estado
+// Procesar formulario si el admin envía una respuesta, cambia el estado o reasigna
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     // Cambiar estado si viene en el POST
@@ -28,6 +28,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         mysqli_stmt_close($stmt_up);
     }
     
+    // Cambiar agente asignado si viene en el POST
+    if (isset($_POST['asignado_a'])) {
+        $asignado_a = !empty($_POST['asignado_a']) ? intval($_POST['asignado_a']) : NULL;
+        
+        $update_asig = "UPDATE tickets SET asignado_a = ? WHERE ticket_id = ?";
+        $stmt_asig = mysqli_prepare($conexion, $update_asig);
+        mysqli_stmt_bind_param($stmt_asig, "ii", $asignado_a, $ticket_id);
+        mysqli_stmt_execute($stmt_asig);
+        mysqli_stmt_close($stmt_asig);
+    }
+
     // Guardar respuesta/comentario si escribieron algo
     if (!empty(trim($_POST['mensaje']))) {
         $mensaje = trim($_POST['mensaje']);
@@ -45,11 +56,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     exit();
 }
 
-// Consultar los datos del ticket, colegio y usuario remitente
-$sql = "SELECT t.*, c.nombre AS nombre_colegio, u.nombre AS nombre_usuario, u.correo AS correo_usuario 
+// Consultar los datos del ticket, colegio, usuario remitente y agente asignado (Una sola vez bien hecha)
+$sql = "SELECT t.*, c.nombre AS nombre_colegio, u.nombre AS nombre_usuario, u.correo AS correo_usuario,
+               us.nombre AS nombre_asignado 
         FROM tickets t
         INNER JOIN colegios c ON t.colegio_id = c.colegio_id
         INNER JOIN usuarios u ON t.usuario_id = u.usuario_id
+        LEFT JOIN usuarios us ON t.asignado_a = us.usuario_id
         WHERE t.ticket_id = ?";
         
 $stmt = mysqli_prepare($conexion, $sql);
@@ -72,6 +85,10 @@ $stmt_c = mysqli_prepare($conexion, $sql_comentarios);
 mysqli_stmt_bind_param($stmt_c, "i", $ticket_id);
 mysqli_stmt_execute($stmt_c);
 $res_comentarios = mysqli_stmt_get_result($stmt_c);
+
+// Obtener lista de personal de soporte para el selector
+$sql_soporte = "SELECT usuario_id, nombre FROM usuarios WHERE rol = 'soporte'";
+$res_soporte = mysqli_query($conexion, $sql_soporte);
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -200,6 +217,7 @@ $res_comentarios = mysqli_stmt_get_result($stmt_c);
                             <span class="badge bg-info text-dark fs-6"><?php echo e($ticket['estado']); ?></span>
                         </div>
                         <hr style="border-color: rgba(255,255,255,0.2);">
+                        
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <p class="mb-1 text-muted-glass fw-bold">Institución:</p>
@@ -211,6 +229,16 @@ $res_comentarios = mysqli_stmt_get_result($stmt_c);
                                 <small class="text-muted-glass"><?php echo e($ticket['correo_usuario']); ?></small>
                             </div>
                         </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <p class="mb-1 text-muted-glass fw-bold"><i class="bi bi-person-badge-fill me-1"></i> Asignado a:</p>
+                                <p class="fs-5 mb-0">
+                                    <?php echo !empty($ticket['nombre_asignado']) ? e($ticket['nombre_asignado']) : '<span class="text-warning">Sin asignar</span>'; ?>
+                                </p>
+                            </div>
+                        </div>
+
                         <div class="mb-3">
                             <p class="mb-1 text-muted-glass fw-bold">Descripción Inicial:</p>
                             <div class="p-3 rounded border" style="background-color: rgba(0,0,0,0.2); border-color: rgba(255,255,255,0.2) !important;">
@@ -218,7 +246,7 @@ $res_comentarios = mysqli_stmt_get_result($stmt_c);
                             </div>
                         </div>
 
-                        <!-- Archivo Adjunto (XSS protegido en rutas y texto) -->
+                        <!-- Archivo Adjunto -->
                         <?php if (!empty($ticket['archivo_adjunto'])): ?>
                             <?php 
                                 $ruta_archivo = 'uploads/' . e($ticket['archivo_adjunto']);
@@ -288,7 +316,7 @@ $res_comentarios = mysqli_stmt_get_result($stmt_c);
                         
                         <form method="POST" action="">
                             <div class="mb-3">
-                                <label for="mensaje" class="form-label fw-bold">Mensaje:</label>
+                                <label for="mensaje" class="form-label fw-bold">Mensaje / Respuesta:</label>
                                 <textarea class="form-control" id="mensaje" name="mensaje" rows="3" placeholder="Escriba su mensaje aquí..."></textarea>
                             </div>
 
@@ -298,6 +326,7 @@ $res_comentarios = mysqli_stmt_get_result($stmt_c);
                             </div>
 
                             <div class="row mb-4">
+                                <!-- Cambiar Estado -->
                                 <div class="col-md-6">
                                     <label for="nuevo_estado" class="form-label fw-bold">Cambiar Estado del Ticket:</label>
                                     <select class="form-select" id="nuevo_estado" name="nuevo_estado">
@@ -305,6 +334,21 @@ $res_comentarios = mysqli_stmt_get_result($stmt_c);
                                         <option value="En Proceso" <?php if($ticket['estado']=='En Proceso') echo 'selected'; ?>>En Proceso</option>
                                         <option value="Resuelto" <?php if($ticket['estado']=='Resuelto') echo 'selected'; ?>>Resuelto</option>
                                         <option value="Cerrado" <?php if($ticket['estado']=='Cerrado') echo 'selected'; ?>>Cerrado</option>
+                                    </select>
+                                </div>
+
+                                <!-- Asignar / Reasignar Agente -->
+                                <div class="col-md-6">
+                                    <label for="asignado_a" class="form-label fw-bold">Asignar a:</label>
+                                    <select class="form-select" id="asignado_a" name="asignado_a">
+                                        <option value="">-- Sin asignar --</option>
+                                        <?php 
+                                        mysqli_data_seek($res_soporte, 0);
+                                        while($agente = mysqli_fetch_assoc($res_soporte)) {
+                                            $selected = ($ticket['asignado_a'] == $agente['usuario_id']) ? 'selected' : '';
+                                            echo '<option value="' . $agente['usuario_id'] . '" ' . $selected . '>' . e($agente['nombre']) . '</option>';
+                                        }
+                                        ?>
                                     </select>
                                 </div>
                             </div>
