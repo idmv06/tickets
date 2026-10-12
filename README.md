@@ -1,10 +1,12 @@
 # tickets
 Programa de tickets para que administradores puedan atender problemas que tengan los usuarios.
 
-
 Basado en SQL, PHP, HTML, CSS. 
 
+
+
 Algunas características:
+
 -contraseñas encriptadas con Bcrypt (a prueba de PHP 8)
 
 -protección total contra SQL Injection con consultas preparadas 
