@@ -63,6 +63,6 @@ El equipo de soporte puede gestionar las solicitudes, asignar responsables y uti
 ## 📝 Créditos y transparencia
 
 - **Desarrollo:** proyecto realizado por Isaac Martínez como parte de mi práctica profesional.
-- **Inteligencia artificial:** se utilizaron herramientas de IA como apoyo para resolver dudas, comprender conceptos, depurar código y mejorar la documentación. La IA fue una herramienta de asistencia durante el proceso de desarrollo, no un sustituto del aprendizaje ni de mi participación en el proyecto. **Hecho con apoyo de IA, pero no mediante *vibe coding* sin comprensión del código.**
+- **Inteligencia artificial:** se utilizaron herramientas de IA como apoyo para resolver dudas, comprender conceptos, depurar código y mejorar la documentación. La IA fue una herramienta de asistencia durante el proceso de desarrollo, no un sustituto del aprendizaje ni de mi participación en el proyecto. **Hecho con apoyo de IA, pero no mediante *vibe coding**
 - **Plantilla del README:** documentación estructurada tomando como referencia la guía [*How to write a good README*, de Bane Sullivan](https://github.com/banesullivan/README), adaptada a las necesidades de este proyecto.
 - **Mejora continua:** este proyecto forma parte de mi aprendizaje en desarrollo web y puede recibir mejoras, correcciones y nuevas funcionalidades.
