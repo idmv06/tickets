@@ -11,7 +11,15 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['rol'] !== 'soporte') {
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nombre = trim($_POST['nombre']);
     $correo = trim($_POST['correo']);
-    $contrasena = trim($_POST['contrasena']); 
+    $contrasena_plana = $_POST['contrasena'] ?? '';
+
+if ($contrasena_plana === '') {
+    $_SESSION['mensaje_error'] = "La contraseña es obligatoria.";
+    header("Location: admin_tickets.php");
+    exit();
+}
+
+$contrasena = password_hash($contrasena_plana, PASSWORD_DEFAULT);
     $rol = 'soporte';
     
     // Si los admins no pertenecen a un colegio, asume NULL. 
