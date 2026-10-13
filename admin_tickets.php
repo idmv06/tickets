@@ -134,6 +134,20 @@ $resultado = mysqli_stmt_get_result($stmt);
 
     <div class="container mb-5">
         
+        <!-- Alertas globales de éxito o error al registrar administrador -->
+        <?php if (isset($_SESSION['mensaje_exito'])): ?>
+            <div class="alert alert-success alert-dismissible fade show shadow-sm mb-4" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i><?php echo $_SESSION['mensaje_exito']; unset($_SESSION['mensaje_exito']); ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <?php endif; ?>
+
+        <?php if (isset($_SESSION['mensaje_error'])): ?>
+            <div class="alert alert-danger alert-dismissible fade show shadow-sm mb-4" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i><?php echo $_SESSION['mensaje_error']; unset($_SESSION['mensaje_error']); ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <?php endif; ?>
         <!-- Tarjeta de Controles: Búsqueda y Filtros Combinados -->
         <div class="row mb-4">
             <div class="col-md-12">
@@ -260,13 +274,6 @@ $resultado = mysqli_stmt_get_result($stmt);
                 <form action="registrar_admin.php" method="POST">
                     <div class="modal-body">
                         
-                        <!-- Alertas de éxito o error si las hay -->
-                        <?php if (isset($_SESSION['mensaje_exito'])): ?>
-                            <div class="alert alert-success py-2"><?php echo $_SESSION['mensaje_exito']; unset($_SESSION['mensaje_exito']); ?></div>
-                        <?php endif; ?>
-                        <?php if (isset($_SESSION['mensaje_error'])): ?>
-                            <div class="alert alert-danger py-2"><?php echo $_SESSION['mensaje_error']; unset($_SESSION['mensaje_error']); ?></div>
-                        <?php endif; ?>
 
                         <div class="mb-3">
                             <label for="nombre" class="form-label fw-bold">Nombre Completo:</label>
