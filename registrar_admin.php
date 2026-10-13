@@ -13,19 +13,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $correo = trim($_POST['correo']);
     $contrasena_plana = $_POST['contrasena'] ?? '';
 
-if ($contrasena_plana === '') {
-    $_SESSION['mensaje_error'] = "La contraseña es obligatoria.";
-    header("Location: admin_tickets.php");
-    exit();
-}
+    if ($contrasena_plana === '') {
+        $_SESSION['mensaje_error'] = "La contraseña es obligatoria.";
+        header("Location: admin_tickets.php");
+        exit();
+    }
 
-$contrasena = password_hash($contrasena_plana, PASSWORD_DEFAULT);
+    // Contraseña encriptada de forma segura con Bcrypt
+    $contrasena = password_hash($contrasena_plana, PASSWORD_DEFAULT);
     $rol = 'soporte';
     
-    // Si los admins no pertenecen a un colegio, asume NULL. 
+    // Los administradores de soporte no pertenecen a un colegio específico (NULL)
     $colegio_id = NULL; 
 
-    // Verificar si el correo ya existe
+    // Verificar si el correo ya existe en la base de datos
     $sql_check = "SELECT usuario_id FROM usuarios WHERE correo = ?";
     $stmt_check = mysqli_prepare($conexion, $sql_check);
     mysqli_stmt_bind_param($stmt_check, "s", $correo);
@@ -33,10 +34,9 @@ $contrasena = password_hash($contrasena_plana, PASSWORD_DEFAULT);
     mysqli_stmt_store_result($stmt_check);
 
     if (mysqli_stmt_num_rows($stmt_check) > 0) {
-        // El correo ya existe
         $_SESSION['mensaje_error'] = "El correo ya está registrado.";
     } else {
-        // Insertar el nuevo admin
+        // Insertar el nuevo administrador con consulta preparada
         $sql = "INSERT INTO usuarios (nombre, correo, contrasena, rol, colegio_id) VALUES (?, ?, ?, ?, ?)";
         $stmt = mysqli_prepare($conexion, $sql);
         mysqli_stmt_bind_param($stmt, "sssss", $nombre, $correo, $contrasena, $rol, $colegio_id);
@@ -52,7 +52,7 @@ $contrasena = password_hash($contrasena_plana, PASSWORD_DEFAULT);
     mysqli_stmt_close($stmt_check);
     mysqli_close($conexion);
     
-    // Redirigir de vuelta al panel
+    // Redirigir de vuelta al panel de tickets
     header("Location: admin_tickets.php");
     exit();
 }

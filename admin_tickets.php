@@ -118,11 +118,15 @@ $resultado = mysqli_stmt_get_result($stmt);
 </head>
 <body>
 
+    <!-- Navbar con botón para abrir el modal de Registrar Admin -->
     <nav class="navbar navbar-dark mb-4 p-3 border-bottom border-white border-opacity-10">
-        <div class="container d-flex justify-content-between">
+        <div class="container d-flex justify-content-between align-items-center">
             <span class="navbar-brand fw-bold"><i class="bi bi-shield-lock-fill me-2"></i>Panel de Soporte Técnico</span>
-            <div>
-                <span class="me-3 text-white-50">Hola, <?php echo e($_SESSION['nombre']); ?></span>
+            <div class="d-flex align-items-center gap-3">
+                <button type="button" class="btn btn-outline-light btn-sm fw-bold" data-bs-toggle="modal" data-bs-target="#modalRegistrarAdmin">
+                    <i class="bi bi-person-plus-fill me-1"></i> Registrar Administrador
+                </button>
+                <span class="text-white-50 small">Hola, <?php echo e($_SESSION['nombre']); ?></span>
                 <a href="logout.php" class="btn btn-outline-light btn-sm fw-bold"><i class="bi bi-box-arrow-right"></i> Salir</a>
             </div>
         </div>
@@ -245,6 +249,50 @@ $resultado = mysqli_stmt_get_result($stmt);
         </div>
     </div>
 
+    <!-- Modal Registrar Administrador -->
+    <div class="modal fade" id="modalRegistrarAdmin" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content card-glass border-white border-opacity-25 text-white">
+                <div class="modal-header border-bottom border-white border-opacity-20">
+                    <h5 class="modal-title fw-bold" id="modalLabel"><i class="bi bi-shield-lock-fill me-2"></i>Registrar Nuevo Administrador</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="registrar_admin.php" method="POST">
+                    <div class="modal-body">
+                        
+                        <!-- Alertas de éxito o error si las hay -->
+                        <?php if (isset($_SESSION['mensaje_exito'])): ?>
+                            <div class="alert alert-success py-2"><?php echo $_SESSION['mensaje_exito']; unset($_SESSION['mensaje_exito']); ?></div>
+                        <?php endif; ?>
+                        <?php if (isset($_SESSION['mensaje_error'])): ?>
+                            <div class="alert alert-danger py-2"><?php echo $_SESSION['mensaje_error']; unset($_SESSION['mensaje_error']); ?></div>
+                        <?php endif; ?>
+
+                        <div class="mb-3">
+                            <label for="nombre" class="form-label fw-bold">Nombre Completo:</label>
+                            <input type="text" class="form-control" id="nombre" name="nombre" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="correo" class="form-label fw-bold">Correo Electrónico:</label>
+                            <input type="email" class="form-control" id="correo" name="correo" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="contrasena" class="form-label fw-bold">Contraseña:</label>
+                            <input type="password" class="form-control" id="contrasena" name="contrasena" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-top border-white border-opacity-20">
+                        <button type="button" class="btn btn-outline-light btn-sm" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-morado px-4">Guardar Administrador</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
