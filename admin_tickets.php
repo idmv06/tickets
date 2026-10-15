@@ -28,7 +28,7 @@ $sql = "SELECT t.*, c.nombre AS nombre_colegio, u.nombre AS nombre_usuario, us.n
 $params = [];
 $types = "";
 
-// 1. Aplicar búsqueda por texto (Asunto, ID, Usuario o Colegio)
+// Aplicar búsqueda por texto (Asunto, ID, Usuario o Colegio)
 if ($busqueda !== '') {
     $sql .= " AND (t.asunto LIKE ? OR u.nombre LIKE ? OR c.nombre LIKE ? OR t.ticket_id LIKE ?)";
     $searchTerm = "%" . $busqueda . "%";
@@ -39,14 +39,14 @@ if ($busqueda !== '') {
     $types .= "ssss";
 }
 
-// 2. Aplicar filtro por estado
+// Aplicar filtro por estado
 if ($filtro_estado !== '') {
     $sql .= " AND t.estado = ?";
     $params[] = $filtro_estado;
     $types .= "s";
 }
 
-// 3. Aplicar filtro por asignación
+// Aplicar filtro por asignación
 if ($filtro_asignado !== '') {
     if ($filtro_asignado === 'sin_asignar') {
         $sql .= " AND t.asignado_a IS NULL";
@@ -118,15 +118,18 @@ $resultado = mysqli_stmt_get_result($stmt);
 </head>
 <body>
 
-    <!-- Navbar con botón para abrir el modal de Registrar Admin -->
+    <!-- Navbar -->
     <nav class="navbar navbar-dark mb-4 p-3 border-bottom border-white border-opacity-10">
         <div class="container d-flex justify-content-between align-items-center">
             <span class="navbar-brand fw-bold"><i class="bi bi-shield-lock-fill me-2"></i>Panel de Soporte Técnico</span>
-            <div class="d-flex align-items-center gap-3">
+            <div class="d-flex align-items-center gap-2">
+                <a href="admin_reportes.php" class="btn btn-outline-light btn-sm fw-bold">
+                    <i class="bi bi-graph-up-arrow me-1"></i> Reportes
+                </a>
                 <button type="button" class="btn btn-outline-light btn-sm fw-bold" data-bs-toggle="modal" data-bs-target="#modalRegistrarAdmin">
-                    <i class="bi bi-person-plus-fill me-1"></i> Registrar Administrador
+                    <i class="bi bi-person-plus-fill me-1"></i> Registrar Admin
                 </button>
-                <span class="text-white-50 small">Hola, <?php echo e($_SESSION['nombre']); ?></span>
+                <span class="text-white-50 small ms-2">Hola, <?php echo e($_SESSION['nombre']); ?></span>
                 <a href="logout.php" class="btn btn-outline-light btn-sm fw-bold"><i class="bi bi-box-arrow-right"></i> Salir</a>
             </div>
         </div>
@@ -148,6 +151,7 @@ $resultado = mysqli_stmt_get_result($stmt);
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         <?php endif; ?>
+
         <!-- Tarjeta de Controles: Búsqueda y Filtros Combinados -->
         <div class="row mb-4">
             <div class="col-md-12">
@@ -155,7 +159,7 @@ $resultado = mysqli_stmt_get_result($stmt);
                     <h3 class="fw-bold mb-3"><i class="bi bi-inbox-fill me-2"></i>Bandeja General de Tickets</h3>
                     
                     <form method="GET" action="" class="row g-3 align-items-center">
-                        <!-- 1. Barra de Búsqueda por Texto -->
+                        <!-- Barra de Búsqueda por Texto -->
                         <div class="col-md-4">
                             <div class="input-group">
                                 <span class="input-group-text bg-white border-0 text-muted"><i class="bi bi-search"></i></span>
@@ -163,7 +167,7 @@ $resultado = mysqli_stmt_get_result($stmt);
                             </div>
                         </div>
 
-                        <!-- 2. Filtro por Estado -->
+                        <!-- Filtro por Estado -->
                         <div class="col-md-3">
                             <select name="estado" class="form-select" onchange="this.form.submit()">
                                 <option value="">-- Todos los estados --</option>
@@ -174,7 +178,7 @@ $resultado = mysqli_stmt_get_result($stmt);
                             </select>
                         </div>
 
-                        <!-- 3. Filtro por Agente Asignado -->
+                        <!-- Filtro por Agente Asignado -->
                         <div class="col-md-3">
                             <select name="asignado_a" id="asignado_a" class="form-select" onchange="this.form.submit()">
                                 <option value="">-- Todos los agentes --</option>
@@ -263,7 +267,7 @@ $resultado = mysqli_stmt_get_result($stmt);
         </div>
     </div>
 
-    <!-- Modal Registrar Administrador -->
+    <!-- Registrar Administrador -->
     <div class="modal fade" id="modalRegistrarAdmin" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content card-glass border-white border-opacity-25 text-white">
@@ -273,8 +277,6 @@ $resultado = mysqli_stmt_get_result($stmt);
                 </div>
                 <form action="registrar_admin.php" method="POST">
                     <div class="modal-body">
-                        
-
                         <div class="mb-3">
                             <label for="nombre" class="form-label fw-bold">Nombre Completo:</label>
                             <input type="text" class="form-control" id="nombre" name="nombre" required>
@@ -299,7 +301,7 @@ $resultado = mysqli_stmt_get_result($stmt);
         </div>
     </div>
 
-    <!-- Bootstrap Bundle JS -->
+    <!-- Bootstrap -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
