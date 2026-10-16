@@ -8,12 +8,13 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['rol'] !== 'soporte') {
     exit();
 }
 
-// Estadísticas Generales (Tarjetas superiores)
+// Estadísticas Generales
 $sql_totales = "SELECT 
     (SELECT COUNT(*) FROM tickets) AS total_tickets,
     (SELECT COUNT(*) FROM tickets WHERE estado = 'Pendiente') AS total_pendientes,
     (SELECT COUNT(*) FROM tickets WHERE estado = 'En Proceso') AS total_proceso,
-    (SELECT COUNT(*) FROM tickets WHERE estado = 'Resuelto') AS total_resueltos";
+    (SELECT COUNT(*) FROM tickets WHERE estado = 'Resuelto') AS total_resueltos,
+    (SELECT COUNT(*) FROM tickets WHERE estado = 'Cerrado') AS total_cerrados";
 $res_totales = mysqli_query($conexion, $sql_totales);
 $totales = mysqli_fetch_assoc($res_totales);
 
@@ -34,8 +35,9 @@ $res_categorias = mysqli_query($conexion, $sql_categorias);
 
 // Carga de trabajo y rendimiento por Agente de Soporte
 $sql_agentes = "SELECT us.nombre AS admin, COUNT(t.ticket_id) AS total_asignados,
+                SUM(CASE WHEN t.estado = 'En Proceso' THEN 1 ELSE 0 END) AS en_proceso,
                 SUM(CASE WHEN t.estado = 'Resuelto' THEN 1 ELSE 0 END) AS resueltos,
-                SUM(CASE WHEN t.estado = 'En Proceso' THEN 1 ELSE 0 END) AS en_proceso
+                SUM(CASE WHEN t.estado = 'Cerrado' THEN 1 ELSE 0 END) AS cerrados
                 FROM tickets t 
                 INNER JOIN usuarios us ON t.asignado_a = us.usuario_id 
                 WHERE t.asignado_a IS NOT NULL 
@@ -112,34 +114,41 @@ $res_usuarios = mysqli_query($conexion, $sql_usuarios);
 
     <div class="container mb-5">
         
-        <!-- Tarjetas de Resumen General -->
-        <div class="row g-4 mb-4">
-            <div class="col-md-3">
+        <!-- Tarjetas de Resumen General (5 Columnas) -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-2-4 col-sm-6 col-12" style="flex: 0 0 auto; width: 20%;">
                 <div class="card card-glass shadow-sm p-3 stat-card text-center">
-                    <div class="text-muted-glass small fw-bold text-uppercase">Total Tickets</div>
-                    <div class="display-5 fw-bold my-2"><?php echo $totales['total_tickets']; ?></div>
+                    <div class="text-muted-glass small fw-bold text-uppercase">Total</div>
+                    <div class="display-6 fw-bold my-2"><?php echo $totales['total_tickets']; ?></div>
                     <i class="bi bi-ticket-detailed display-6 opacity-50"></i>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2-4 col-sm-6 col-12" style="flex: 0 0 auto; width: 20%;">
                 <div class="card card-glass shadow-sm p-3 stat-card text-center">
                     <div class="text-muted-glass small fw-bold text-uppercase">Pendientes</div>
-                    <div class="display-5 fw-bold my-2 text-warning"><?php echo $totales['total_pendientes']; ?></div>
+                    <div class="display-6 fw-bold my-2 text-warning"><?php echo $totales['total_pendientes']; ?></div>
                     <i class="bi bi-clock-history display-6 opacity-50"></i>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2-4 col-sm-6 col-12" style="flex: 0 0 auto; width: 20%;">
                 <div class="card card-glass shadow-sm p-3 stat-card text-center">
                     <div class="text-muted-glass small fw-bold text-uppercase">En Proceso</div>
-                    <div class="display-5 fw-bold my-2 text-info"><?php echo $totales['total_proceso']; ?></div>
+                    <div class="display-6 fw-bold my-2 text-info"><?php echo $totales['total_proceso']; ?></div>
                     <i class="bi bi-gear-fill display-6 opacity-50"></i>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2-4 col-sm-6 col-12" style="flex: 0 0 auto; width: 20%;">
                 <div class="card card-glass shadow-sm p-3 stat-card text-center">
                     <div class="text-muted-glass small fw-bold text-uppercase">Resueltos</div>
-                    <div class="display-5 fw-bold my-2 text-success"><?php echo $totales['total_resueltos']; ?></div>
+                    <div class="display-6 fw-bold my-2 text-success"><?php echo $totales['total_resueltos']; ?></div>
                     <i class="bi bi-check-circle-fill display-6 opacity-50"></i>
+                </div>
+            </div>
+            <div class="col-md-2-4 col-sm-6 col-12" style="flex: 0 0 auto; width: 20%;">
+                <div class="card card-glass shadow-sm p-3 stat-card text-center">
+                    <div class="text-muted-glass small fw-bold text-uppercase">Cerrados</div>
+                    <div class="display-6 fw-bold my-2 text-white-50"><?php echo $totales['total_cerrados']; ?></div>
+                    <i class="bi bi-lock-fill display-6 opacity-50"></i>
                 </div>
             </div>
         </div>
@@ -159,6 +168,7 @@ $res_usuarios = mysqli_query($conexion, $sql_usuarios);
                                         <th class="text-center">Asignados</th>
                                         <th class="text-center">En Proceso</th>
                                         <th class="text-center">Resueltos</th>
+                                        <th class="text-center">Cerrados</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -169,10 +179,11 @@ $res_usuarios = mysqli_query($conexion, $sql_usuarios);
                                                 <td class="text-center"><span class="badge bg-light text-dark"><?php echo $ag['total_asignados']; ?></span></td>
                                                 <td class="text-center"><span class="badge bg-info text-dark"><?php echo $ag['en_proceso']; ?></span></td>
                                                 <td class="text-center"><span class="badge bg-success"><?php echo $ag['resueltos']; ?></span></td>
+                                                <td class="text-center"><span class="badge bg-dark text-white"><?php echo $ag['cerrados']; ?></span></td>
                                             </tr>
                                         <?php endwhile; ?>
                                     <?php else: ?>
-                                        <tr><td colspan="4" class="text-center text-muted-glass py-3">No hay tickets asignados a agentes aún.</td></tr>
+                                        <tr><td colspan="5" class="text-center text-muted-glass py-3">No hay tickets asignados a agentes aún.</td></tr>
                                     <?php endif; ?>
                                 </tbody>
                             </table>
