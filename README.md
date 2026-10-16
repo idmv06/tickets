@@ -1,7 +1,7 @@
 
 # 🎫 Sistema de Tickets
 
-![Login](https://github.com/idmv06/tickets/blob/main/readme/login.png "Pantalla de Login")
+![Login](https://github.com/idmv06/tickets/blob/main/readme/admin.png "Pantalla de Login")
 ![PHP](https://img.shields.io/badge/PHP-8.x-777BB4?logo=php&logoColor=white)
 ![Bootstrap](https://img.shields.io/badge/Bootstrap-5.3.3-7952B3?logo=bootstrap&logoColor=white)
 ![Database](https://img.shields.io/badge/Database-MySQL%2FMariaDB-blue)
