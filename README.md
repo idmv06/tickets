@@ -46,8 +46,6 @@ El equipo de soporte puede gestionar las solicitudes, asignar responsables y uti
 
 
 
-## 📸 Capturas de Pantalla
-
 
 ## 📸 Capturas de Pantalla
 
