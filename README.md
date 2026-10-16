@@ -1,7 +1,7 @@
 
 # 🎫 Sistema de Tickets
 
-![Login](https://github.com/idmv06/tickets/blob/main/readme/admin.png "Pantalla de Login")
+![tickets](https://github.com/idmv06/tickets/blob/main/readme/admin.png "Pantalla de tickets")
 ![PHP](https://img.shields.io/badge/PHP-8.x-777BB4?logo=php&logoColor=white)
 ![Bootstrap](https://img.shields.io/badge/Bootstrap-5.3.3-7952B3?logo=bootstrap&logoColor=white)
 ![Database](https://img.shields.io/badge/Database-MySQL%2FMariaDB-blue)
@@ -43,6 +43,16 @@ La plataforma permite gestionar tickets, es decir, solicitudes de asistencia té
 Según los permisos de cada rol, las personas usuarias pueden crear solicitudes, adjuntar archivos, consultar el estado de los tickets y participar en el seguimiento de su resolución.
 
 El equipo de soporte puede gestionar las solicitudes, asignar responsables y utilizar comentarios internos para coordinar la atención.
+
+![MER](https://github.com/idmv06/tickets/blob/main/readme/database_diagram.png "MER")
+
+
+## 📸 Capturas de Pantalla
+
+![Login](https://github.com/idmv06/tickets/blob/main/readme/login.png "Pantalla de Login")
+![ticket](https://github.com/idmv06/tickets/blob/main/readme/ticket.png "ticket")
+![reportes](https://github.com/idmv06/tickets/blob/main/readme/reportes.png "reportes")
+![crear](https://github.com/idmv06/tickets/blob/main/readme/crearticket.png "crearticket")
 
 ## ⬇️ Instalación
 
