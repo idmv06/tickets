@@ -122,7 +122,7 @@ if ($_SESSION['rol'] === 'soporte') {
                             <div class="mb-4">
                              <label for="archivo" class="form-label fw-bold">Adjuntar captura o documento (Opcional)</label>
                              <input type="file" class="form-control" id="archivo" name="archivo" accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.zip">
-                             <div class="form-text text-white-50">Formatos permitidos: Imágenes (PNG, JPG), PDF, Word, ZIP. Máx: 5MB.</div>
+                             <div class="form-text text-white-50">Formatos permitidos: Imágenes (PNG, JPG), PDF, ZIP. Máx: 5MB.</div>
                             </div>
 
                             <!-- Botón -->

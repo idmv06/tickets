@@ -141,7 +141,7 @@ function mostrarExito() {
                             <h3 class="fw-bold mb-3 text-white">¡Ticket enviado con éxito!</h3>
                             <p class="text-muted-glass mb-4">Su solicitud ha sido registrada correctamente. El equipo de soporte técnico la revisará pronto.</p>
                             <div class="d-flex justify-content-center gap-2">
-                                <a href="crear_ticket.php" class="btn btn-morado px-4">Crear otro ticket</a>
+                                <a href="nuevo_ticket.php" class="btn btn-morado px-4">Crear otro ticket</a>
                                 <a href="mis_tickets.php" class="btn btn-outline-light px-4">Ver mis tickets</a>
                             </div>
                         </div>
