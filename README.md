@@ -1,13 +1,12 @@
 
+
 # 🎫 Sistema de Tickets
 
-![tickets](https://github.com/idmv06/tickets/blob/main/readme/admin.png "Pantalla de tickets")
-![PHP](https://img.shields.io/badge/PHP-8.x-777BB4?logo=php&logoColor=white)
-![Bootstrap](https://img.shields.io/badge/Bootstrap-5.3.3-7952B3?logo=bootstrap&logoColor=white)
-![Database](https://img.shields.io/badge/Database-MySQL%2FMariaDB-blue)
-![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)
-![CSS3](https://img.shields.io/badge/CSS3-1572B6?logo=css3&logoColor=white)
-![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)
+![PHP](https://img.shields.io/badge/PHP-8.x-777BB4?logo=php&logoColor=white) ![Bootstrap](https://img.shields.io/badge/Bootstrap-5.3.3-7952B3?logo=bootstrap&logoColor=white) ![Database](https://img.shields.io/badge/Database-MySQL%2FMariaDB-blue) ![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white) ![CSS3](https://img.shields.io/badge/CSS3-1572B6?logo=css3&logoColor=white) ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)
+
+<p align="center">
+  <img src="readme/admin.png" alt="Panel de soporte técnico" width="850">
+</p>
 
 
 ## 🌟 Características
