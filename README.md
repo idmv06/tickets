@@ -43,15 +43,47 @@ Según los permisos de cada rol, las personas usuarias pueden crear solicitudes,
 
 El equipo de soporte puede gestionar las solicitudes, asignar responsables y utilizar comentarios internos para coordinar la atención.
 
-![MER](https://github.com/idmv06/tickets/blob/main/readme/database_diagram.png "MER")
+
 
 
 ## 📸 Capturas de Pantalla
 
-![Login](https://github.com/idmv06/tickets/blob/main/readme/login.png "Pantalla de Login")
-![ticket](https://github.com/idmv06/tickets/blob/main/readme/ticket.png "ticket")
-![reportes](https://github.com/idmv06/tickets/blob/main/readme/reportes.png "reportes")
-![crear](https://github.com/idmv06/tickets/blob/main/readme/crearticket.png "crearticket")
+
+## 📸 Capturas de Pantalla
+
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <strong>Inicio de sesión</strong><br><br>
+      <img src="readme/login.png" alt="Pantalla de inicio de sesión" width="420">
+    </td>
+    <td align="center" width="50%">
+      <strong>Crear un ticket</strong><br><br>
+      <img src="readme/crearticket.png" alt="Formulario para crear un ticket" width="420">
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <strong>Detalle y seguimiento del ticket</strong><br><br>
+      <img src="readme/ticket.png" alt="Detalle de un ticket y su conversación" width="420">
+    </td>
+    <td align="center" width="50%">
+      <strong>Reportes y analíticas</strong><br><br>
+      <img src="readme/reportes.png" alt="Panel de reportes y estadísticas" width="420">
+    </td>
+  </tr>
+</table>
+
+
+## 🗄️ Modelo Entidad-Relación
+
+<p align="center">
+  <img
+    src="readme/database_diagram.png"
+    alt="Diagrama del modelo entidad-relación de la base de datos"
+    width="850">
+</p>
+
 
 ## ⬇️ Instalación
 
