@@ -8,30 +8,59 @@ if (!isset($_SESSION['usuario_id'])) {
     exit();
 }
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $asunto = trim($_POST['asunto']);
-    $categoria = $_POST['categoria'];
-    $prioridad = $_POST['prioridad'];
-    $descripcion = trim($_POST['descripcion']);
-    
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $asunto = trim($_POST['asunto'] ?? '');
+    $categoria = trim($_POST['categoria'] ?? '');
+    $prioridad = trim($_POST['prioridad'] ?? '');
+    $descripcion = trim($_POST['descripcion'] ?? '');
     $usuario_id = $_SESSION['usuario_id'];
-    // Validar que exista el colegio_id en sesión, de lo contrario asignar NULL o 1 por defecto
-    $colegio_id = isset($_SESSION['colegio_id']) ? $_SESSION['colegio_id'] : 1;
 
-    if (empty($asunto) || empty($descripcion)) {
+    // 1. Whitelist Categoría y Prioridad
+    $categorias_permitidas = [
+        'Registro de Notas',
+        'Control de Entradas y Salidas',
+        'Módulo de Anuncios',
+        'Problema General'
+    ];
+    $prioridades_permitidas = ['Baja', 'Media', 'Alta', 'Urgente'];
+
+    if (!in_array($categoria, $categorias_permitidas, true) || !in_array($prioridad, $prioridades_permitidas, true)) {
+        die("Error: Los datos enviados contienen una categoría o prioridad no válida.");
+    }
+
+    // 2. validación Colegio
+    if (!isset($_SESSION['colegio_id']) || empty($_SESSION['colegio_id'])) {
+        die("Error de seguridad: Su cuenta de usuario no tiene una institución asignada correctamente.");
+    }
+    $colegio_id = intval($_SESSION['colegio_id']);
+
+    // Verificar en la BD que el colegio exista
+    $sql_val_col = "SELECT colegio_id FROM colegios WHERE colegio_id = ?";
+    $stmt_col = mysqli_prepare($conexion, $sql_val_col);
+    mysqli_stmt_bind_param($stmt_col, "i", $colegio_id);
+    mysqli_stmt_execute($stmt_col);
+    mysqli_stmt_store_result($stmt_col);
+
+    if (mysqli_stmt_num_rows($stmt_col) === 0) {
+        mysqli_stmt_close($stmt_col);
+        die("Error: La institución asignada a su cuenta no existe en la base de datos.");
+    }
+    mysqli_stmt_close($stmt_col);
+
+    // 3. CAMPOS OBLIGATORIOS
+    if ($asunto === '' || $descripcion === '') {
         die("Error: El asunto y la descripción son obligatorios.");
     }
 
     $nombre_archivo_final = NULL;
 
-    // Procesar archivo adjunto si existe
+    // 4. PROCESAR ARCHIVO ADJUNTO
     if (isset($_FILES['archivo']) && $_FILES['archivo']['error'] === UPLOAD_ERR_OK) {
         $tmp_name  = $_FILES['archivo']['tmp_name'];
         $file_size = $_FILES['archivo']['size'];
 
         // Límite de 5MB
         if ($file_size <= 5242880) {
-            
             $finfo = finfo_open(FILEINFO_MIME_TYPE);
             $mime  = finfo_file($finfo, $tmp_name);
             finfo_close($finfo);
@@ -47,7 +76,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if (array_key_exists($mime, $allowed_mimes)) {
                 $ext = $allowed_mimes[$mime];
                 
-                // Crear carpeta uploads si no existe
                 if (!is_dir('uploads')) {
                     mkdir('uploads', 0755, true);
                 }
@@ -57,11 +85,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 
                 $destino = 'uploads/' . $nombre_archivo_final;
                 move_uploaded_file($tmp_name, $destino);
+            } else {
+                die("Error: El tipo de archivo adjunto no está permitido.");
             }
+        } else {
+            die("Error: El archivo excede el tamaño máximo permitido de 5MB.");
         }
     }
 
-    // Consulta SQL preparada (Exactamente 7 parámetros = "iisssss")
+    // INSERCIÓN SEGURA CON CONSULTA PREPARADA
     $sql = "INSERT INTO tickets (colegio_id, usuario_id, categoria, prioridad, estado, asunto, descripcion, archivo_adjunto) 
             VALUES (?, ?, ?, ?, 'Pendiente', ?, ?, ?)";
     
