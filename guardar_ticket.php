@@ -2,7 +2,6 @@
 session_start();
 include 'conexion.php';
 
-// Validar sesión activa
 if (!isset($_SESSION['usuario_id'])) {
     header("Location: login.html");
     exit();
@@ -15,51 +14,37 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $descripcion = trim($_POST['descripcion'] ?? '');
     $usuario_id = $_SESSION['usuario_id'];
 
-    // 1. Whitelist Categoría y Prioridad
-    $categorias_permitidas = [
-        'Registro de Notas',
-        'Control de Entradas y Salidas',
-        'Módulo de Anuncios',
-        'Problema General'
-    ];
+    // Whitelist 
+    $categorias_permitidas = ['Registro de Notas', 'Control de Entradas y Salidas', 'Módulo de Anuncios', 'Problema General'];
     $prioridades_permitidas = ['Baja', 'Media', 'Alta', 'Urgente'];
 
     if (!in_array($categoria, $categorias_permitidas, true) || !in_array($prioridad, $prioridades_permitidas, true)) {
-        die("Error: Los datos enviados contienen una categoría o prioridad no válida.");
+        $_SESSION['mensaje_error'] = "Los datos enviados no son válidos.";
+        header("Location: nuevo_ticket.php");
+        exit();
     }
 
-    // 2. validación Colegio
+    // Colegio válido
     if (!isset($_SESSION['colegio_id']) || empty($_SESSION['colegio_id'])) {
-        die("Error de seguridad: Su cuenta de usuario no tiene una institución asignada correctamente.");
+        $_SESSION['mensaje_error'] = "Error de sesión: Usuario sin institución asignada.";
+        header("Location: login.html");
+        exit();
     }
     $colegio_id = intval($_SESSION['colegio_id']);
 
-    // Verificar en la BD que el colegio exista
-    $sql_val_col = "SELECT colegio_id FROM colegios WHERE colegio_id = ?";
-    $stmt_col = mysqli_prepare($conexion, $sql_val_col);
-    mysqli_stmt_bind_param($stmt_col, "i", $colegio_id);
-    mysqli_stmt_execute($stmt_col);
-    mysqli_stmt_store_result($stmt_col);
-
-    if (mysqli_stmt_num_rows($stmt_col) === 0) {
-        mysqli_stmt_close($stmt_col);
-        die("Error: La institución asignada a su cuenta no existe en la base de datos.");
-    }
-    mysqli_stmt_close($stmt_col);
-
-    // 3. CAMPOS OBLIGATORIOS
     if ($asunto === '' || $descripcion === '') {
-        die("Error: El asunto y la descripción son obligatorios.");
+        $_SESSION['mensaje_error'] = "El asunto y la descripción son obligatorios.";
+        header("Location: nuevo_ticket.php");
+        exit();
     }
 
     $nombre_archivo_final = NULL;
 
-    // 4. PROCESAR ARCHIVO ADJUNTO
+    // Procesar archivo adjunto
     if (isset($_FILES['archivo']) && $_FILES['archivo']['error'] === UPLOAD_ERR_OK) {
         $tmp_name  = $_FILES['archivo']['tmp_name'];
         $file_size = $_FILES['archivo']['size'];
 
-        // Límite de 5MB
         if ($file_size <= 5242880) {
             $finfo = finfo_open(FILEINFO_MIME_TYPE);
             $mime  = finfo_file($finfo, $tmp_name);
@@ -75,25 +60,24 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
             if (array_key_exists($mime, $allowed_mimes)) {
                 $ext = $allowed_mimes[$mime];
-                
                 if (!is_dir('uploads')) {
                     mkdir('uploads', 0755, true);
                 }
-
-                $random_name = bin2hex(random_bytes(16));
-                $nombre_archivo_final = $random_name . '.' . $ext;
-                
-                $destino = 'uploads/' . $nombre_archivo_final;
-                move_uploaded_file($tmp_name, $destino);
+                $nombre_archivo_final = bin2hex(random_bytes(16)) . '.' . $ext;
+                move_uploaded_file($tmp_name, 'uploads/' . $nombre_archivo_final);
             } else {
-                die("Error: El tipo de archivo adjunto no está permitido.");
+                $_SESSION['mensaje_error'] = "El formato de archivo adjunto no está permitido.";
+                header("Location: nuevo_ticket.php");
+                exit();
             }
         } else {
-            die("Error: El archivo excede el tamaño máximo permitido de 5MB.");
+            $_SESSION['mensaje_error'] = "El archivo excede el límite de 5MB.";
+            header("Location: nuevo_ticket.php");
+            exit();
         }
     }
 
-    // INSERCIÓN SEGURA CON CONSULTA PREPARADA
+    // Inserción segura 
     $sql = "INSERT INTO tickets (colegio_id, usuario_id, categoria, prioridad, estado, asunto, descripcion, archivo_adjunto) 
             VALUES (?, ?, ?, ?, 'Pendiente', ?, ?, ?)";
     
@@ -105,19 +89,29 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         if (mysqli_stmt_execute($stmt)) {
             mysqli_stmt_close($stmt);
             mysqli_close($conexion);
+            
+            // Muestra la pantalla de éxito con opción a crear otro o ver sus tickets
             mostrarExito();
             exit();
         } else {
-            $error_db = mysqli_error($conexion);
+            error_log("Error DB al ejecutar inserción de ticket: " . mysqli_error($conexion));
             mysqli_stmt_close($stmt);
             mysqli_close($conexion);
-            die("Error al ejecutar la consulta: " . $error_db);
+            $_SESSION['mensaje_error'] = "Ocurrió un error al procesar su solicitud en la base de datos. Intente más tarde.";
+            header("Location: nuevo_ticket.php");
+            exit();
         }
     } else {
-        $error_prep = mysqli_error($conexion);
+        error_log("Error DB al preparar consulta de ticket: " . mysqli_error($conexion));
         mysqli_close($conexion);
-        die("Error al preparar la consulta: " . $error_prep);
+        $_SESSION['mensaje_error'] = "Ocurrió un error interno en el sistema. Intente más tarde.";
+        header("Location: nuevo_ticket.php");
+        exit();
     }
+} else {
+    // Si intentan entrar a este archivo por URL directamente (GET), los devolvemos al formulario
+    header("Location: nuevo_ticket.php");
+    exit();
 }
 
 function mostrarExito() {

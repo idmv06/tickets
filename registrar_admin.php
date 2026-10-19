@@ -8,13 +8,13 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['rol'] !== 'soporte') {
     exit();
 }
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $nombre = trim($_POST['nombre']);
-    $correo = trim($_POST['correo']);
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $nombre = trim($_POST['nombre'] ?? '');
+    $correo = trim($_POST['correo'] ?? '');
     $contrasena_plana = $_POST['contrasena'] ?? '';
 
-    if ($contrasena_plana === '') {
-        $_SESSION['mensaje_error'] = "La contraseña es obligatoria.";
+    if ($contrasena_plana === '' || $nombre === '' || $correo === '') {
+        $_SESSION['mensaje_error'] = "Todos los campos son obligatorios.";
         header("Location: admin_tickets.php");
         exit();
     }
@@ -31,7 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     mysqli_stmt_store_result($stmt_check);
 
     if (mysqli_stmt_num_rows($stmt_check) > 0) {
-        $_SESSION['mensaje_error'] = "El correo ya está registrado.";
+        $_SESSION['mensaje_error'] = "El correo electrónico ya está registrado.";
     } else {
         $sql = "INSERT INTO usuarios (nombre, correo, contrasena, rol, colegio_id) VALUES (?, ?, ?, ?, ?)";
         $stmt = mysqli_prepare($conexion, $sql);
@@ -40,7 +40,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (mysqli_stmt_execute($stmt)) {
             $_SESSION['mensaje_exito'] = "¡Administrador registrado correctamente!";
         } else {
-            $_SESSION['mensaje_error'] = "Error al registrar: " . mysqli_error($conexion);
+            error_log("Error DB al registrar administrador: " . mysqli_error($conexion));
+            $_SESSION['mensaje_error'] = "Ocurrió un error al registrar el administrador en el sistema.";
         }
         mysqli_stmt_close($stmt);
     }
@@ -48,6 +49,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     mysqli_stmt_close($stmt_check);
     mysqli_close($conexion);
     
+    header("Location: admin_tickets.php");
+    exit();
+} else {
     header("Location: admin_tickets.php");
     exit();
 }
