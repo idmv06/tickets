@@ -17,6 +17,7 @@ $ticket_id = intval($_GET['id']);
 
 // Procesar formulario si el admin envía una respuesta, cambia el estado o reasigna
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    validar_csrf();
     
     // Cambiar estado si viene en el POST
     if (isset($_POST['nuevo_estado'])) {
@@ -315,6 +316,7 @@ $res_soporte = mysqli_query($conexion, $sql_soporte);
                         <h5 class="fw-bold mb-3"><i class="bi bi-reply-fill me-2"></i>Responder o Agregar Nota</h5>
                         
                         <form method="POST" action="">
+                            <?php require_once 'csrf.php'; campo_csrf(); ?>
                             <div class="mb-3">
                                 <label for="mensaje" class="form-label fw-bold">Mensaje / Respuesta:</label>
                                 <textarea class="form-control" id="mensaje" name="mensaje" rows="3" placeholder="Escriba su mensaje aquí..."></textarea>

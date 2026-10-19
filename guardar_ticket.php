@@ -1,6 +1,7 @@
 <?php
 session_start();
 include 'conexion.php';
+require_once 'csrf.php';
 
 if (!isset($_SESSION['usuario_id'])) {
     header("Location: login.html");
@@ -8,6 +9,7 @@ if (!isset($_SESSION['usuario_id'])) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    validar_csrf();
     $asunto = trim($_POST['asunto'] ?? '');
     $categoria = trim($_POST['categoria'] ?? '');
     $prioridad = trim($_POST['prioridad'] ?? '');

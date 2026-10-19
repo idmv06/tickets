@@ -252,6 +252,13 @@ $resultado = mysqli_stmt_get_result($stmt);
                                             <a href="ver_ticket.php?id=<?php echo $t['ticket_id']; ?>" class="btn btn-morado btn-sm">
                                                 <i class="bi bi-eye-fill me-1"></i> Atender
                                             </a>
+                                            <form action="eliminar_ticket.php" method="POST" class="d-inline" onsubmit="return confirm('¿Está seguro de que desea eliminar este ticket de forma permanente?');">
+                                            <?php require_once 'csrf.php'; campo_csrf(); ?>
+                                             <input type="hidden" name="ticket_id" value="<?php echo $t['ticket_id']; ?>">
+                                             <button type="submit" class="btn btn-outline-danger btn-sm" title="Eliminar Ticket">
+                                                 <i class="bi bi-trash-fill"></i>
+                                             </button>
+                                            </form>
                                         </td>
                                     </tr>
                                 <?php endwhile; ?>
@@ -266,7 +273,7 @@ $resultado = mysqli_stmt_get_result($stmt);
             </div>
         </div>
     </div>
-
+    
     <!-- Registrar Administrador -->
     <div class="modal fade" id="modalRegistrarAdmin" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -276,6 +283,7 @@ $resultado = mysqli_stmt_get_result($stmt);
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form action="registrar_admin.php" method="POST">
+                    <?php require_once 'csrf.php'; campo_csrf(); ?>
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="nombre" class="form-label fw-bold">Nombre Completo:</label>

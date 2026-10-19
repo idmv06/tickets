@@ -1,14 +1,15 @@
 <?php
 session_start();
 include 'conexion.php';
+require_once 'csrf.php';
 
-// Validar que el usuario sea de soporte
 if (!isset($_SESSION['usuario_id']) || $_SESSION['rol'] !== 'soporte') {
     header("Location: login.html");
     exit();
 }
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    validar_csrf(); 
     $nombre = trim($_POST['nombre'] ?? '');
     $correo = trim($_POST['correo'] ?? '');
     $contrasena_plana = $_POST['contrasena'] ?? '';

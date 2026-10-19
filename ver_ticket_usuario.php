@@ -35,6 +35,7 @@ if (!$ticket) {
 
 // Procesar si el usuario envía una respuesta
 if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty(trim($_POST['mensaje']))) {
+    validar_csrf();
     $mensaje = trim($_POST['mensaje']);
     $es_interno = 0; // Los usuarios nunca pueden mandar notas internas
 
@@ -247,6 +248,7 @@ $res_comentarios = mysqli_stmt_get_result($stmt_c);
                         <h5 class="fw-bold mb-3"><i class="bi bi-reply-fill me-2"></i>Enviar Mensaje a Soporte</h5>
                         
                         <form method="POST" action="">
+                            <?php require_once 'csrf.php'; campo_csrf(); ?>
                             <div class="mb-3">
                                 <label for="mensaje" class="form-label fw-bold">Su respuesta:</label>
                                 <textarea class="form-control" id="mensaje" name="mensaje" rows="3" placeholder="Escriba aquí si tiene más información o dudas..." required></textarea>

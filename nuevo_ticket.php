@@ -83,7 +83,7 @@ if ($_SESSION['rol'] === 'soporte') {
 
                         <!-- Formulario procesado por PHP -->
                         <form action="guardar_ticket.php" method="POST" enctype="multipart/form-data">
-                            
+                         <?php require_once 'csrf.php'; campo_csrf(); ?>
                             <!-- Asunto -->
                             <div class="mb-3">
                                 <label for="asunto" class="form-label fw-bold">Asunto del problema</label>
