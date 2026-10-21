@@ -1,28 +1,55 @@
 <?php
+// Configurar parámetros seguros de cookies ANTES de session_start()
+session_set_cookie_params([
+    'lifetime' => 0,
+    'path' => '/',
+    'domain' => '',
+    'secure' => true,      // Solo viaja por HTTPS 
+    'httponly' => true,    // Inaccesible para JavaScript (Previene robo por XSS)
+    'samesite' => 'Lax'    // Protección contra CSRF en navegación cruzada
+]);
+
 session_start();
 include 'conexion.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-    // El '??' evita los errores si el dato llega vacío o no existe
     $correo = trim($_POST['correo'] ?? '');
-    
     $password_ingresada = $_POST['password'] ?? $_POST['contrasena'] ?? '';
+    
     if (empty($correo) || empty($password_ingresada)) {
         mostrarError("Faltan datos. Por favor ingrese su correo y contraseña.");
     }
 
-    // SQL Injection prevenido
-    $sql = "SELECT usuario_id, nombre, contrasena, rol, colegio_id FROM usuarios WHERE correo = ?";
+    // SQL con columnas de control de intentos fallidos y bloqueo temporal
+    $sql = "SELECT usuario_id, nombre, correo, contrasena, rol, colegio_id, intentos_fallidos, bloqueado_hasta FROM usuarios WHERE correo = ?";
     $stmt = mysqli_prepare($conexion, $sql);
     mysqli_stmt_bind_param($stmt, "s", $correo);
     mysqli_stmt_execute($stmt);
     $resultado = mysqli_stmt_get_result($stmt);
+    $user = mysqli_fetch_assoc($resultado);
+    mysqli_stmt_close($stmt);
 
-    if ($user = mysqli_fetch_assoc($resultado)) {
-        // Verificación con hash usando la columna $user['contrasena']
+    if ($user) {
+        $ahora = new DateTime();
+        $bloqueado_hasta = $user['bloqueado_hasta'] ? new DateTime($user['bloqueado_hasta']) : null;
+
+        // Verificar si la cuenta se encuentra bloqueada temporalmente
+        if ($bloqueado_hasta && $ahora < $bloqueado_hasta) {
+            $minutos_restantes = ceil(($bloqueado_hasta->getTimestamp() - $ahora->getTimestamp()) / 60);
+            mostrarError("Demasiados intentos fallidos. Cuenta bloqueada temporalmente. Intente de nuevo en {$minutos_restantes} minuto(s).");
+        }
+
+        // Verificación de contraseña con hash
         if (password_verify($password_ingresada, $user['contrasena'])) {
             
+            // Éxito: Reiniciar contador de intentos fallidos y limpiar bloqueo
+            $sql_reset = "UPDATE usuarios SET intentos_fallidos = 0, bloqueado_hasta = NULL WHERE usuario_id = ?";
+            $stmt_reset = mysqli_prepare($conexion, $sql_reset);
+            mysqli_stmt_bind_param($stmt_reset, "i", $user['usuario_id']);
+            mysqli_stmt_execute($stmt_reset);
+            mysqli_stmt_close($stmt_reset);
+
             // Prevenir fijación de sesión
             session_regenerate_id(true);
 
@@ -31,16 +58,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['rol']        = $user['rol'];
             $_SESSION['colegio_id'] = $user['colegio_id'];
 
+            mysqli_close($conexion);
+
             if ($user['rol'] === 'soporte') {
                 header("Location: admin_tickets.php");
             } else {
                 header("Location: mis_tickets.php");
             }
             exit();
+
+        } else {
+            // Contraseña incorrecta: Incrementar intentos fallidos
+            $intentos = $user['intentos_fallidos'] + 1;
+
+            // Si llega a 5 intentos fallidos, bloquear por 15 minutos
+            if ($intentos >= 5) {
+                $tiempo_bloqueo = (new DateTime())->modify('+15 minutes')->format('Y-m-d H:i:s');
+                $sql_fail = "UPDATE usuarios SET intentos_fallidos = ?, bloqueado_hasta = ? WHERE usuario_id = ?";
+                $stmt_fail = mysqli_prepare($conexion, $sql_fail);
+                mysqli_stmt_bind_param($stmt_fail, "isi", $intentos, $tiempo_bloqueo, $user['usuario_id']);
+            } else {
+                $sql_fail = "UPDATE usuarios SET intentos_fallidos = ? WHERE usuario_id = ?";
+                $stmt_fail = mysqli_prepare($conexion, $sql_fail);
+                mysqli_stmt_bind_param($stmt_fail, "ii", $intentos, $user['usuario_id']);
+            }
+
+            mysqli_stmt_execute($stmt_fail);
+            mysqli_stmt_close($stmt_fail);
         }
     }
 
-    // Si falló el correo o la contraseña, mostramos el error
+    // Si falló el correo o la contraseña, mostramos un mensaje genérico por seguridad
     mostrarError("Correo o contraseña incorrectos. Por favor intente de nuevo.");
 }
 
