@@ -4,7 +4,7 @@ session_set_cookie_params([
     'lifetime' => 0,
     'path' => '/',
     'domain' => '',
-    'secure' => true,      // Solo viaja por HTTPS 
+    'secure' => true,      // Solo viaja por HTTPS (Railway lo soporta de forma nativa)
     'httponly' => true,    // Inaccesible para JavaScript (Previene robo por XSS)
     'samesite' => 'Lax'    // Protección contra CSRF en navegación cruzada
 ]);
@@ -21,7 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         mostrarError("Faltan datos. Por favor ingrese su correo y contraseña.");
     }
 
-    // SQL con columnas de control de intentos fallidos y bloqueo temporal
+    // Consultar usuario incluyendo intentos y bloqueo numérico
     $sql = "SELECT usuario_id, nombre, correo, contrasena, rol, colegio_id, intentos_fallidos, bloqueado_hasta FROM usuarios WHERE correo = ?";
     $stmt = mysqli_prepare($conexion, $sql);
     mysqli_stmt_bind_param($stmt, "s", $correo);
@@ -31,19 +31,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     mysqli_stmt_close($stmt);
 
     if ($user) {
-        $ahora = new DateTime();
-        $bloqueado_hasta = $user['bloqueado_hasta'] ? new DateTime($user['bloqueado_hasta']) : null;
+        $tiempo_actual = time();
 
-        // Verificar si la cuenta se encuentra bloqueada temporalmente
-        if ($bloqueado_hasta && $ahora < $bloqueado_hasta) {
-            $minutos_restantes = ceil(($bloqueado_hasta->getTimestamp() - $ahora->getTimestamp()) / 60);
+        // 1. Verificar si la cuenta está bloqueada temporalmente
+        if ($user['bloqueado_hasta'] && $tiempo_actual < $user['bloqueado_hasta']) {
+            $segundos_restantes = $user['bloqueado_hasta'] - $tiempo_actual;
+            $minutos_restantes = ceil($segundos_restantes / 60);
             mostrarError("Demasiados intentos fallidos. Cuenta bloqueada temporalmente. Intente de nuevo en {$minutos_restantes} minuto(s).");
         }
 
-        // Verificación de contraseña con hash
+        // 2. Verificación de contraseña con hash
         if (password_verify($password_ingresada, $user['contrasena'])) {
             
-            // Éxito: Reiniciar contador de intentos fallidos y limpiar bloqueo
+            // Éxito: Resetear contador de intentos fallidos y limpiar bloqueo
             $sql_reset = "UPDATE usuarios SET intentos_fallidos = 0, bloqueado_hasta = NULL WHERE usuario_id = ?";
             $stmt_reset = mysqli_prepare($conexion, $sql_reset);
             mysqli_stmt_bind_param($stmt_reset, "i", $user['usuario_id']);
@@ -69,14 +69,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         } else {
             // Contraseña incorrecta: Incrementar intentos fallidos
-            $intentos = $user['intentos_fallidos'] + 1;
+            $intentos = intval($user['intentos_fallidos']) + 1;
 
-            // Si llega a 5 intentos fallidos, bloquear por 15 minutos
             if ($intentos >= 5) {
-                $tiempo_bloqueo = (new DateTime())->modify('+15 minutes')->format('Y-m-d H:i:s');
+                // Bloquear por exactamente 15 minutos (900 segundos a partir de ahora)
+                $bloqueado_hasta = $tiempo_actual + 900; 
                 $sql_fail = "UPDATE usuarios SET intentos_fallidos = ?, bloqueado_hasta = ? WHERE usuario_id = ?";
                 $stmt_fail = mysqli_prepare($conexion, $sql_fail);
-                mysqli_stmt_bind_param($stmt_fail, "isi", $intentos, $tiempo_bloqueo, $user['usuario_id']);
+                mysqli_stmt_bind_param($stmt_fail, "iii", $intentos, $bloqueado_hasta, $user['usuario_id']);
             } else {
                 $sql_fail = "UPDATE usuarios SET intentos_fallidos = ? WHERE usuario_id = ?";
                 $stmt_fail = mysqli_prepare($conexion, $sql_fail);
@@ -88,7 +88,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
-    // Si falló el correo o la contraseña, mostramos un mensaje genérico por seguridad
+    mysqli_close($conexion);
+    // Mensaje genérico por seguridad
     mostrarError("Correo o contraseña incorrectos. Por favor intente de nuevo.");
 }
 
