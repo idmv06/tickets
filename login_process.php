@@ -68,7 +68,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             exit();
 
         } else {
-            // Contraseña incorrecta: Incrementar intentos fallidos
+            // Incrementar intentos fallidos
             $intentos = intval($user['intentos_fallidos']) + 1;
 
             if ($intentos >= 5) {
