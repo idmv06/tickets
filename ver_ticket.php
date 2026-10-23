@@ -97,10 +97,9 @@ $res_soporte = mysqli_query($conexion, $sql_soporte);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Atender Ticket #<?php echo $ticket['ticket_id']; ?></title>
-    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Iconos -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="app.css">
     
     <!-- Estilos -->
     <style>
@@ -191,7 +190,7 @@ $res_soporte = mysqli_query($conexion, $sql_soporte);
         }
     </style>
 </head>
-<body>
+<body class="app-background">
 
     <!-- Navbar (Se oculta al imprimir) -->
     <nav class="navbar navbar-dark mb-4 ocultar-al-imprimir">

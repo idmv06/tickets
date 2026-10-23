@@ -22,6 +22,7 @@ if ($_SESSION['rol'] === 'soporte') {
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="app.css">
 
     <style>
         html, body {
@@ -54,7 +55,7 @@ if ($_SESSION['rol'] === 'soporte') {
 </style>
 
 </head>
-<body>
+<body class="app-background">
 
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark mb-4">

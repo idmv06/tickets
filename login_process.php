@@ -1,11 +1,11 @@
 <?php
-// Configurar parámetros seguros de cookies ANTES de session_start()
+// Configurar parámetros seguros de cookies antes de session_start()
 session_set_cookie_params([
     'lifetime' => 0,
     'path' => '/',
     'domain' => '',
-    'secure' => true,      // Solo viaja por HTTPS (Railway lo soporta de forma nativa)
-    'httponly' => true,    // Inaccesible para JavaScript (Previene robo por XSS)
+    'secure' => true,      // Solo viaja por HTTPS 
+    'httponly' => true,    // Inaccesible para JavaScript
     'samesite' => 'Lax'    // Protección contra CSRF en navegación cruzada
 ]);
 
@@ -33,14 +33,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($user) {
         $tiempo_actual = time();
 
-        // 1. Verificar si la cuenta está bloqueada temporalmente
+        // Verificar si la cuenta está bloqueada temporalmente
         if ($user['bloqueado_hasta'] && $tiempo_actual < $user['bloqueado_hasta']) {
             $segundos_restantes = $user['bloqueado_hasta'] - $tiempo_actual;
             $minutos_restantes = ceil($segundos_restantes / 60);
             mostrarError("Demasiados intentos fallidos. Cuenta bloqueada temporalmente. Intente de nuevo en {$minutos_restantes} minuto(s).");
         }
 
-        // 2. Verificación de contraseña con hash
+        // Verificación de contraseña con hash
         if (password_verify($password_ingresada, $user['contrasena'])) {
             
             // Éxito: Resetear contador de intentos fallidos y limpiar bloqueo
@@ -102,6 +102,7 @@ function mostrarError($mensaje) {
         <title>Error de Autenticación</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+        <link rel="stylesheet" href="app.css">
         <style>
             html, body {
                 min-height: 100vh;
@@ -134,7 +135,7 @@ function mostrarError($mensaje) {
             }
         </style>
     </head>
-    <body class="d-flex align-items-center vh-100">
+    <body class="d-flex align-items-center justify-content-center min-vh-100 app-background">
         <div class="container text-center">
             <div class="row justify-content-center">
                 <div class="col-md-5">

@@ -31,6 +31,7 @@ $resultado = mysqli_stmt_get_result($stmt);
     <title>Mis Tickets - Panel de Usuario</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="app.css">
     <style>
         html, body {
             min-height: 100vh;
@@ -68,7 +69,7 @@ $resultado = mysqli_stmt_get_result($stmt);
         }
     </style>
 </head>
-<body>
+<body class="app-background"> 
 
     <nav class="navbar navbar-dark mb-4 p-3 border-bottom border-white border-opacity-10">
         <div class="container d-flex justify-content-between">
