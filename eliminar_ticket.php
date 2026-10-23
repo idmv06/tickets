@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($ticket_id > 0) {
         // Opcional: Eliminar primero comentarios asociados para mantener integridad referencial
-        $sql_com = "DELETE FROM comentarios WHERE ticket_id = ?";
+        $sql_com = "DELETE FROM comentarios_tickets WHERE ticket_id = ?";
         $stmt_com = mysqli_prepare($conexion, $sql_com);
         mysqli_stmt_bind_param($stmt_com, "i", $ticket_id);
         mysqli_stmt_execute($stmt_com);

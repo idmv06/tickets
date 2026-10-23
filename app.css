@@ -1,0 +1,116 @@
+
+/* Variables de diseño */
+:root {
+    --color-morado-oscuro: #500497;
+    --color-morado: #8b14af;
+
+    --glass-background: rgba(255, 255, 255, 0.15);
+    --glass-background-hover: rgba(255, 255, 255, 0.22);
+    --glass-border: rgba(255, 255, 255, 0.3);
+    --glass-border-subtle: rgba(255, 255, 255, 0.15);
+
+    --glass-text-muted: rgba(255, 255, 255, 0.75);
+
+    --glass-blur: 10px;
+    --transition-standard: 0.3s ease;
+}
+
+/*Fondo general de la plataforma */
+body.app-background {
+    min-height: 100vh;
+    margin: 0;
+    color: #ffffff;
+
+    background: linear-gradient(
+        to bottom,
+        var(--color-morado-oscuro),
+        var(--color-morado)
+    );
+
+    background-attachment: fixed;
+}
+
+/*Tarjetas de cristal */
+.card-glass {
+    background-color: var(--glass-background) !important;
+
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+
+    border: 1px solid var(--glass-border) !important;
+    color: #ffffff;
+}
+
+.card-glass .card-header {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    border-bottom: 1px solid var(--glass-border-subtle);
+}
+
+/*Tablas transparentes */
+.table-glass {
+    color: #ffffff;
+    background-color: transparent !important;
+}
+
+.table-glass th,
+.table-glass td {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    border-color: var(--glass-border-subtle) !important;
+    color: #ffffff !important;
+}
+
+/*Texto secundario */
+.text-muted-glass {
+    color: var(--glass-text-muted) !important;
+}
+
+/*Títulos morados */
+.text-morado {
+    color: var(--color-morado) !important;
+}
+
+/*Botones personalizados */
+.btn-morado {
+    background-color: #ffffff !important;
+    border: 1px solid #ffffff !important;
+    color: var(--color-morado) !important;
+
+    font-weight: 600;
+    transition: all var(--transition-standard);
+}
+
+.btn-morado:hover {
+    background-color: var(--color-morado-oscuro) !important;
+    border-color: var(--color-morado-oscuro) !important;
+    color: #ffffff !important;
+}
+
+/*Formularios dentro de tarjetas de cristal */
+.card-glass .form-control,
+.card-glass .form-select {
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.card-glass .form-control:focus,
+.card-glass .form-select:focus {
+    background-color: #ffffff;
+    border-color: var(--color-morado);
+    box-shadow: 0 0 0 0.2rem rgba(139, 20, 175, 0.25);
+}
+
+/*Comentarios de los tickets */
+.comentario-interno {
+    background-color: rgba(255, 193, 7, 0.2) !important;
+    border: 1px solid rgba(255, 193, 7, 0.5) !important;
+}
+
+.comentario-soporte {
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+}
+
+.comentario-usuario {
+    background-color: rgba(0, 0, 0, 0.2) !important;
+    border: 1px solid var(--glass-border-subtle) !important;
+}
