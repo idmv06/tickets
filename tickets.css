@@ -1,0 +1,83 @@
+@media print {
+
+    /* Fondo blanco y texto oscuro */
+    html,
+    body {
+        min-height: auto !important;
+        margin: 0 !important;
+        background: #ffffff !important;
+        background-image: none !important;
+        color: #000000 !important;
+    }
+
+    body.app-background {
+        background: #ffffff !important;
+        background-image: none !important;
+    }
+
+    /*Quitar el efecto glassmorphism al imprimir */
+    .card-glass {
+        background: #ffffff !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        border: 1px solid #dee2e6 !important;
+        color: #000000 !important;
+        box-shadow: none !important;
+    }
+
+    .card-glass .card-header {
+        background: #ffffff !important;
+        border-bottom: 1px solid #dee2e6 !important;
+        color: #000000 !important;
+    }
+
+    /*Corregir los colores del texto */
+    .text-muted-glass,
+    .text-white-50 {
+        color: #6c757d !important;
+    }
+
+    .text-white {
+        color: #000000 !important;
+    }
+
+    /*Comentarios legibles en papel */
+    .comentario-interno,
+    .comentario-soporte,
+    .comentario-usuario {
+        background: #ffffff !important;
+        border: 1px solid #dee2e6 !important;
+        color: #000000 !important;
+        break-inside: avoid;
+    }
+
+    /*Tablas en blanco y negro */
+    .table-glass th,
+    .table-glass td {
+        background: #ffffff !important;
+        color: #000000 !important;
+        border-color: #dee2e6 !important;
+    }
+
+    /*Ocultar controles que no pertenecen al documento */
+    .ocultar-al-imprimir {
+        display: none !important;
+    }
+
+    /*Evitar sombras y efectos innecesarios */
+    .card,
+    .card-body {
+        box-shadow: none !important;
+        text-shadow: none !important;
+    }
+
+    /*Evitar que las imágenes se salgan de la página */
+    img {
+        max-width: 100% !important;
+    }
+
+    /*Separadores visibles sobre papel */
+    hr {
+        border-color: #adb5bd !important;
+    }
+}

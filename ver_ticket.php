@@ -100,8 +100,8 @@ $res_soporte = mysqli_query($conexion, $sql_soporte);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="app.css">
+    <link rel="stylesheet" href="tickets.css">
     
-    <!-- Estilos -->
     <style>
         html, body {
             min-height: 100vh;
@@ -111,30 +111,6 @@ $res_soporte = mysqli_query($conexion, $sql_soporte);
         .form-control, .form-select {
             background-color: rgba(255, 255, 255, 0.9) !important;
             border: none;
-        }
-        /* --- ESTILOS EXCLUSIVOS PARA IMPRESIÓN (PDF) --- */
-        @media print {
-            body {
-                background: #ffffff !important;
-                color: #000000 !important;
-            }
-            .card-glass {
-                background-color: #ffffff !important;
-                backdrop-filter: none !important;
-                -webkit-backdrop-filter: none !important;
-                border: 1px solid #dee2e6 !important;
-                color: #000000 !important;
-                box-shadow: none !important;
-            }
-            .text-muted-glass, .text-white-50 {
-                color: #6c757d !important;
-            }
-            .text-white {
-                color: #000000 !important;
-            }
-            .ocultar-al-imprimir {
-                display: none !important;
-            }
         }
     </style>
 </head>
