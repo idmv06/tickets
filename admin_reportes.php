@@ -67,28 +67,6 @@ $res_usuarios = mysqli_query($conexion, $sql_usuarios);
         html, body {
             min-height: 100vh;
             margin: 0;
-            background-image: linear-gradient(to bottom, rgb(80, 4, 151), rgb(139, 20, 175)) !important;
-            background-attachment: fixed;
-            color: #ffffff;
-        }
-        .card-glass {
-            background-color: rgba(255, 255, 255, 0.15) !important;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3) !important;
-            color: #ffffff;
-        }
-        .table-glass {
-            color: #ffffff;
-            background-color: transparent !important;
-        }
-        .table-glass th, .table-glass td {
-            background-color: rgba(255, 255, 255, 0.05) !important;
-            border-color: rgba(255, 255, 255, 0.1) !important;
-            color: #ffffff !important;
-        }
-        .text-muted-glass {
-            color: rgba(255, 255, 255, 0.75) !important;
         }
         .stat-card {
             transition: transform 0.3s ease;

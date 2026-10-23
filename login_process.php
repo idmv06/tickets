@@ -107,31 +107,6 @@ function mostrarError($mensaje) {
             html, body {
                 min-height: 100vh;
                 margin: 0;
-                background-image: linear-gradient(to bottom, rgb(80, 4, 151), rgb(139, 20, 175)) !important;
-                background-attachment: fixed;
-                color: #ffffff;
-            }
-            .card-glass {
-                background-color: rgba(255, 255, 255, 0.15) !important;
-                backdrop-filter: blur(10px);
-                -webkit-backdrop-filter: blur(10px);
-                border: 1px solid rgba(255, 255, 255, 0.3) !important;
-                color: #ffffff;
-            }
-            .text-muted-glass {
-                color: rgba(255, 255, 255, 0.8) !important;
-            }
-            .btn-morado {
-                background-color: #ffffff !important;
-                border-color: #ffffff !important;    
-                color: rgb(139, 20, 175) !important;
-                font-weight: 600;
-                transition: all 0.3s ease;
-            }
-            .btn-morado:hover {
-                background-color: rgb(80, 4, 151) !important;
-                border-color: rgb(80, 4, 151) !important;
-                color: #ffffff !important;
             }
         </style>
     </head>

@@ -106,64 +106,12 @@ $res_soporte = mysqli_query($conexion, $sql_soporte);
         html, body {
             min-height: 100vh;
             margin: 0;
-            background-image: linear-gradient(to bottom, rgb(80, 4, 151), rgb(139, 20, 175)) !important;
-            background-attachment: fixed;
-            color: #ffffff;
         }
-
-        /* Tarjetas con efecto Cristal */
-        .card-glass {
-            background-color: rgba(255, 255, 255, 0.15) !important;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3) !important;
-            color: #ffffff;
-        }
-
-        .card-glass .card-header {
-            background-color: rgba(255, 255, 255, 0.1) !important;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .text-muted-glass {
-            color: rgba(255, 255, 255, 0.7) !important;
-        }
-
-        /* Estilos de los comentarios */
-        .comentario-interno {
-            background-color: rgba(255, 193, 7, 0.2) !important;
-            border: 1px solid rgba(255, 193, 7, 0.5) !important;
-        }
-        .comentario-soporte {
-            background-color: rgba(255, 255, 255, 0.2) !important;
-            border: 1px solid rgba(255, 255, 255, 0.4) !important;
-        }
-        .comentario-usuario {
-            background-color: rgba(0, 0, 0, 0.2) !important;
-            border: 1px solid rgba(255, 255, 255, 0.2) !important;
-        }
-
         /* Inputs y textareas */
         .form-control, .form-select {
             background-color: rgba(255, 255, 255, 0.9) !important;
             border: none;
         }
-
-        /* Botón estilo morado */
-        .btn-morado {
-            background-color: #ffffff !important;
-            border-color: #ffffff !important;    
-            color: rgb(139, 20, 175) !important; 
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .btn-morado:hover {
-            background-color: rgb(80, 4, 151) !important;
-            border-color: rgb(80, 4, 151) !important;
-            color: #ffffff !important; 
-        }
-
         /* --- ESTILOS EXCLUSIVOS PARA IMPRESIÓN (PDF) --- */
         @media print {
             body {
