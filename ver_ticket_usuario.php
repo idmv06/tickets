@@ -1,6 +1,9 @@
 <?php
 session_start();
-include 'conexion.php';
+
+require_once __DIR__ . '/csrf.php';
+require_once __DIR__ . '/conexion.php';
+
 
 // Validar que el usuario esté logueado y NO sea soporte
 if (!isset($_SESSION['usuario_id']) || $_SESSION['rol'] === 'soporte') {
@@ -248,7 +251,7 @@ $res_comentarios = mysqli_stmt_get_result($stmt_c);
                         <h5 class="fw-bold mb-3"><i class="bi bi-reply-fill me-2"></i>Enviar Mensaje a Soporte</h5>
                         
                         <form method="POST" action="">
-                            <?php require_once 'csrf.php'; campo_csrf(); ?>
+                            <?php campo_csrf(); ?>
                             <div class="mb-3">
                                 <label for="mensaje" class="form-label fw-bold">Su respuesta:</label>
                                 <textarea class="form-control" id="mensaje" name="mensaje" rows="3" placeholder="Escriba aquí si tiene más información o dudas..." required></textarea>

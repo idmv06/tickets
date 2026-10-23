@@ -1,15 +1,15 @@
 <?php
 session_start();
-include 'conexion.php';
+
+require_once __DIR__ . '/csrf.php';
+require_once __DIR__ . '/conexion.php';
 
 // Validar que el usuario sea de soporte
-if (!isset($_SESSION['usuario_id']) || $_SESSION['rol'] !== 'soporte') {
+if (
+    !isset($_SESSION['usuario_id']) ||
+    $_SESSION['rol'] !== 'soporte'
+) {
     header("Location: login.html");
-    exit();
-}
-
-if (!isset($_GET['id'])) {
-    header("Location: admin_tickets.php");
     exit();
 }
 
@@ -316,7 +316,7 @@ $res_soporte = mysqli_query($conexion, $sql_soporte);
                         <h5 class="fw-bold mb-3"><i class="bi bi-reply-fill me-2"></i>Responder o Agregar Nota</h5>
                         
                         <form method="POST" action="">
-                            <?php require_once 'csrf.php'; campo_csrf(); ?>
+                            <?php campo_csrf(); ?>
                             <div class="mb-3">
                                 <label for="mensaje" class="form-label fw-bold">Mensaje / Respuesta:</label>
                                 <textarea class="form-control" id="mensaje" name="mensaje" rows="3" placeholder="Escriba su mensaje aquí..."></textarea>
