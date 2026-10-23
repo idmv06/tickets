@@ -28,31 +28,8 @@ if ($_SESSION['rol'] === 'soporte') {
         html, body {
             min-height: 100vh;
             margin: 0;
-            background-image: linear-gradient(to bottom, rgb(80, 4, 151), rgb(139, 20, 175)) !important;
-            background-attachment: fixed;
         }
     </style>
-    <style>
-    /* Color morado para el título */
-    .text-morado {
-        color: rgb(139, 20, 175) !important; 
-    }
-
-    /* Estilos para el botón: Blanco por defecto, Morado en hover */
-    .btn-morado {
-        background-color: #ffffff !important;
-        border-color: #ffffff !important;    
-        color: rgb(139, 20, 175) !important; 
-        font-weight: 600;
-        transition: all 0.3s ease; 
-    }
-
-    .btn-morado:hover {
-        background-color: rgb(139, 20, 175) !important; 
-        border-color: rgb(139, 20, 175) !important;
-        color: #ffffff !important; 
-    }
-</style>
 
 </head>
 <body class="app-background">

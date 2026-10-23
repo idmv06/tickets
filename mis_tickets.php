@@ -36,9 +36,7 @@ $resultado = mysqli_stmt_get_result($stmt);
         html, body {
             min-height: 100vh;
             margin: 0;
-            background-image: linear-gradient(to bottom, rgb(80, 4, 151), rgb(139, 20, 175)) !important;
-            background-attachment: fixed;
-            color: #ffffff;
+
         }
     </style>
 </head>
