@@ -40,33 +40,6 @@ $resultado = mysqli_stmt_get_result($stmt);
             background-attachment: fixed;
             color: #ffffff;
         }
-        .card-glass {
-            background-color: rgba(255, 255, 255, 0.15) !important;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3) !important;
-            color: #ffffff;
-        }
-        .table-glass {
-            color: #ffffff;
-        }
-        .table-glass th, .table-glass td {
-            background-color: rgba(255, 255, 255, 0.05) !important;
-            border-color: rgba(255, 255, 255, 0.1) !important;
-            color: #ffffff !important;
-        }
-        .text-muted-glass {
-            color: rgba(255, 255, 255, 0.7) !important;
-        }
-        .btn-morado {
-            background-color: #ffffff !important;
-            color: rgb(139, 20, 175) !important;
-            font-weight: 600;
-        }
-        .btn-morado:hover {
-            background-color: rgb(80, 4, 151) !important;
-            color: #ffffff !important;
-        }
     </style>
 </head>
 <body class="app-background"> 
