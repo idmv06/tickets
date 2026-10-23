@@ -9,3 +9,8 @@ WORKDIR /var/www/html
 EXPOSE 8080
 
 CMD ["sh", "-c", "php -S 0.0.0.0:${PORT:-8080} -t /var/www/html"]
+
+RUN printf '%s\n' \
+    'upload_max_filesize=6M' \
+    'post_max_size=8M' \
+    > /usr/local/etc/php/conf.d/uploads.ini
