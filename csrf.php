@@ -17,7 +17,7 @@ function campo_csrf() {
     echo '<input type="hidden" name="csrf_token" value="' . htmlspecialchars($token, ENT_QUOTES, 'UTF-8') . '">';
 }
 
-// Valida el token recibido en POST
+// Valida el token recibido en post
 function validar_csrf() {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $token_post = $_POST['csrf_token'] ?? '';
