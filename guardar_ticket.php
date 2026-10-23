@@ -1,4 +1,3 @@
-
 <?php
 // Iniciar sesión y cargar la protección CSRF.
 if (session_status() === PHP_SESSION_NONE) {
