@@ -32,7 +32,7 @@ if ($_SESSION['rol'] === 'soporte') {
         }
     </style>
     <style>
-    /* Color morado para el título (tomado de tu degradado) */
+    /* Color morado para el título */
     .text-morado {
         color: rgb(139, 20, 175) !important; 
     }
@@ -41,15 +41,15 @@ if ($_SESSION['rol'] === 'soporte') {
     .btn-morado {
         background-color: #ffffff !important;
         border-color: #ffffff !important;    
-        color: rgb(139, 20, 175) !important; /* Texto morado para que contraste con el fondo blanco */
+        color: rgb(139, 20, 175) !important; 
         font-weight: 600;
-        transition: all 0.3s ease; /* Transición suave */
+        transition: all 0.3s ease; 
     }
 
     .btn-morado:hover {
-        background-color: rgb(139, 20, 175) !important; /* Fondo morado al pasar el mouse */
+        background-color: rgb(139, 20, 175) !important; 
         border-color: rgb(139, 20, 175) !important;
-        color: #ffffff !important; /* Cambié el texto a blanco en el hover para que sea más legible que el negro */
+        color: #ffffff !important; 
     }
 </style>
 
@@ -80,6 +80,17 @@ if ($_SESSION['rol'] === 'soporte') {
                         
                         <h3 class="mb-2 text-morado fw-bold">Reportar un Inconveniente</h3>
                         <p class="text-muted mb-4">Complete los datos a continuación para enviar una solicitud al equipo de soporte.</p>
+                        <?php if (!empty($_SESSION['mensaje_error'])): ?>
+                        <div class="alert alert-danger" role="alert">
+                         <?= htmlspecialchars(
+                            $_SESSION['mensaje_error'],
+                            ENT_QUOTES,
+                            'UTF-8'
+                            ) ?>
+                            </div>
+
+                            <?php unset($_SESSION['mensaje_error']); ?>
+                        <?php endif; ?>
 
                         <!-- Formulario procesado por PHP -->
                         <form action="guardar_ticket.php" method="POST" enctype="multipart/form-data">
@@ -95,10 +106,22 @@ if ($_SESSION['rol'] === 'soporte') {
                                 <div class="col-md-6 mb-3">
                                     <label for="categoria" class="form-label fw-bold">Categoría</label>
                                     <select class="form-select" id="categoria" name="categoria">
-                                        <option value="Registro de Notas">Registro de Notas</option>
-                                        <option value="Control de Entradas">Control de Entradas y Salidas</option>
-                                        <option value="Anuncios">Módulo de Anuncios</option>
-                                        <option value="General">Problema General</option>
+                                        
+                                        <option value="Registro de Notas">
+                                         Registro de Notas
+                                        </option>
+
+                                        <option value="Control de Entradas y Salidas">
+                                            Control de Entradas y Salidas
+                                        </option>
+
+                                        <option value="Módulo de Anuncios">
+                                            Módulo de Anuncios
+                                        </option>
+
+                                        <option value="Problema General">
+                                            Problema General
+                                        </option>
                                     </select>
                                 </div>
                                 <div class="col-md-6 mb-3">
@@ -121,7 +144,7 @@ if ($_SESSION['rol'] === 'soporte') {
                             <!-- adjuntar archivo/captura -->
                             <div class="mb-4">
                              <label for="archivo" class="form-label fw-bold">Adjuntar captura o documento (Opcional)</label>
-                             <input type="file" class="form-control" id="archivo" name="archivo" accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.zip">
+                             <input type="file" class="form-control" id="archivo" name="archivo" accept=".jpg,.jpeg,.png,.gif,.pdf,.zip">
                              <div class="form-text text-white-50">Formatos permitidos: Imágenes (PNG, JPG), PDF, ZIP. Máx: 5MB.</div>
                             </div>
 
