@@ -22,6 +22,8 @@
 - Asignación y reasignación de agentes de soporte.
 - Panel de administración con búsqueda por texto y filtros por estado y agente.
 - Vista de impresión optimizada para guardar los tickets como PDF desde el navegador.
+- Protección CSRF
+- Login Timeouts para prevenir bruteforcing
 
 ## ℹ️ Descripción
 
