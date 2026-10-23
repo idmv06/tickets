@@ -16,7 +16,7 @@
 - Protección contra XSS mediante escape de salida.
 - Validación de archivos adjuntos por tipo MIME y tamaño.
 - Interfaz personalizada con estética Glassmorphism.
-- Roles diferenciados para profesores, personal administrativo y soporte técnico.
+- Roles diferenciados para profesores y soporte técnico.
 - Creación de tickets con archivos adjuntos.
 - Sistema de comentarios públicos e internos (notas privadas para el equipo).
 - Asignación y reasignación de agentes de soporte.
@@ -24,6 +24,7 @@
 - Vista de impresión optimizada para guardar los tickets como PDF desde el navegador.
 - Protección CSRF
 - Login Timeouts para prevenir bruteforcing
+- Impresión de tickets
 
 ## ℹ️ Descripción
 
